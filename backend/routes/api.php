@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\PasswordResetController;
+use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -22,5 +23,11 @@ Route::prefix('v1')->group(function () {
             Route::get('me', [AuthController::class, 'me']);
             Route::put('password', [AuthController::class, 'changePassword']);
         });
+    });
+
+    Route::middleware(['auth:sanctum', 'active'])->group(function () {
+        Route::apiResource('users', UserController::class)->except('destroy');
+        Route::patch('users/{user}/status', [UserController::class, 'updateStatus']);
+        Route::post('users/{user}/password-reset', [UserController::class, 'sendPasswordReset'])->middleware('throttle:password-reset');
     });
 });
