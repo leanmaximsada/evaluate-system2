@@ -18,53 +18,61 @@ class AuthController extends Controller
 {
     public function __construct(private readonly AuditLogger $audit) {}
 
-    public function login(LoginRequest $request): JsonResponse
-    {
-        $credentials = $request->validated();
+public function login(LoginRequest $request): JsonResponse
+{
+    $credentials = $request->validated();
 
-        if (! Auth::guard('web')->attempt($credentials)) {
-            $this->audit->log('auth.login_failed', null, ['email' => $credentials['email']]);
+    if (! Auth::guard('web')->attempt($credentials)) {
+        $this->audit->log('auth.login_failed', null, ['email' => $credentials['email']]);
 
-            throw ValidationException::withMessages(['email' => [__('auth.failed')]]);
-        }
-
-        /** @var User $user */
-        $user = Auth::guard('web')->user();
-
-        if (! $user->is_active || ! $user->isAdmin()) {
-            $reason = ! $user->is_active ? 'inactive' : 'not_admin';
-
-            Auth::guard('web')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            $this->audit->log('auth.login_denied', $user, ['reason' => $reason], $user);
-
-            return response()->json([
-                'message' => $reason === 'inactive'
-                    ? 'Your account has been deactivated.'
-                    : 'This account does not have access to the administration system.',
-            ], 403);
-        }
-
-        $request->session()->regenerate();
-
-        $user->forceFill(['last_login_at' => now()])->save();
-        $this->audit->log('auth.login', $user, [], $user);
-
-        return UserResource::make($user)->response();
+        throw ValidationException::withMessages(['email' => [__('auth.failed')]]);
     }
 
-    public function logout(Request $request): Response
-    {
-        $this->audit->log('auth.logout', $request->user());
+    /** @var User $user */
+    $user = Auth::guard('web')->user();
+
+    if (! $user->is_active || ! $user->isAdmin()) {
+        $reason = ! $user->is_active ? 'inactive' : 'not_admin';
 
         Auth::guard('web')->logout();
+        $this->resetSession($request);
+
+        $this->audit->log('auth.login_denied', $user, ['reason' => $reason], $user);
+
+        return response()->json([
+            'message' => $reason === 'inactive'
+                ? 'Your account has been deactivated.'
+                : 'This account does not have access to the administration system.',
+        ], 403);
+    }
+
+    if ($request->hasSession()) {
+        $request->session()->regenerate();
+    }
+
+    $user->forceFill(['last_login_at' => now()])->save();
+    $this->audit->log('auth.login', $user, [], $user);
+
+    return UserResource::make($user)->response();
+}
+
+public function logout(Request $request): Response
+{
+    $this->audit->log('auth.logout', $request->user());
+
+    Auth::guard('web')->logout();
+    $this->resetSession($request);
+
+    return response()->noContent();
+}
+
+private function resetSession(Request $request): void
+{
+    if ($request->hasSession()) {
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        return response()->noContent();
     }
+}
 
     public function me(Request $request): UserResource
     {

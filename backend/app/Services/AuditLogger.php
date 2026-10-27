@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class AuditLogger
 {
@@ -16,19 +17,20 @@ class AuditLogger
     /**
      * @param  array<string, mixed>  $summary  Safe, minimal description of the change.
      */
-    public function log(string $action, ?Model $subject = null, array $summary = [], ?User $actor = null): AuditLog
-    {
-        $actor ??= auth()->user();
+public function log(string $action, ?Model $subject = null, array $summary = [], ?User $actor = null): AuditLog
+{
+    /** @var User|null $actor */
+    $actor ??= Auth::user();
 
-        return AuditLog::create([
-            'user_id' => $actor?->getKey(),
-            'action' => $action,
-            'auditable_type' => $subject?->getMorphClass(),
-            'auditable_id' => $subject?->getKey(),
-            'summary' => $this->sanitize($summary),
-            'ip_address' => request()->ip(),
-        ]);
-    }
+    return AuditLog::create([
+        'user_id' => $actor?->id,
+        'action' => $action,
+        'auditable_type' => $subject?->getMorphClass(),
+        'auditable_id' => $subject?->getKey(),
+        'summary' => $this->sanitize($summary),
+        'ip_address' => request()->ip(),
+    ]);
+}
 
     /** @param array<string, mixed> $data */
     private function sanitize(array $data): array

@@ -39,7 +39,7 @@ class CreateSuperAdmin extends Command
         $user = new User(['name' => $name, 'email' => $email, 'password' => $plain]);
         $user->role = Role::SuperAdmin;
         $user->is_active = true;
-        $user->email_verified_at = now();
+        $user->email_verified_at = \Illuminate\Support\Carbon::now();
         $user->save();
 
         $audit->log('user.super_admin_created', $user, ['via' => 'cli']);
