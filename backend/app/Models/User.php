@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Enums\Permission;
 
 class User extends Authenticatable
 {
@@ -42,6 +43,13 @@ class User extends Authenticatable
     {
         return $this->role === Role::Judge;
     }
+
+    public function hasPermission(Permission $permission): bool
+{
+    return $this->is_active
+        && $this->role !== null
+        && in_array($permission, $this->role->permissions(), true);
+}
 
     public function assignedEvents()
     {
