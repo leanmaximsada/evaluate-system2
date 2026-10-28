@@ -1,6 +1,8 @@
-import type { Role } from '@/types'
+'use client'
 
-const label: Record<Role, string> = { super_admin: 'Super Admin', admin: 'Admin', judge: 'Judge' }
+import type { Role } from '@/types'
+import { useI18n } from '@/i18n/provider'
+
 const tone: Record<Role, string> = {
   super_admin: 'bg-purple-100 text-purple-800',
   admin: 'bg-indigo-100 text-indigo-800',
@@ -8,5 +10,6 @@ const tone: Record<Role, string> = {
 }
 
 export function RoleBadge({ role }: { role: Role }) {
-  return <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${tone[role]}`}>{label[role]}</span>
+  const { t } = useI18n()
+  return <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${tone[role]}`}>{t(`role.${role}`)}</span>
 }

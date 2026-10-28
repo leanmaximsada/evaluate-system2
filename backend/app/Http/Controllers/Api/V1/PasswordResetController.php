@@ -22,7 +22,7 @@ class PasswordResetController extends Controller
         Password::sendResetLink($request->only('email'));
 
         // Same response whether or not the email exists (prevents account enumeration).
-        return response()->json(['message' => 'If that email address is registered, a reset link has been sent.']);
+        return response()->json(['message' => __('If that email address is registered, a reset link has been sent.')]);
     }
 
     public function reset(ResetPasswordRequest $request): JsonResponse
@@ -44,6 +44,6 @@ class PasswordResetController extends Controller
             throw ValidationException::withMessages(['email' => [__($status)]]);
         }
 
-        return response()->json(['message' => 'Your password has been reset.']);
+        return response()->json(['message' => __('Your password has been reset.')]);
     }
 }

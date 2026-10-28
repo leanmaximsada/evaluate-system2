@@ -7,6 +7,8 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { resetPasswordRequest } from '@/features/auth/api'
+import { newPasswordSchema } from '@/features/auth/password-schema'
+import { useI18n } from '@/i18n/provider'
 import { applyServerErrors, getErrorMessage } from '@/lib/api'
 import { Card } from '@/components/ui/card'
 import { Field } from '@/components/ui/field'
@@ -15,21 +17,19 @@ import { Alert } from '@/components/ui/alert'
 
 const schema = z
   .object({
-    password: z
-      .string()
-      .min(10, 'Use at least 10 characters')
-      .regex(/[a-z]/, 'Include a lowercase letter')
-      .regex(/[A-Z]/, 'Include an uppercase letter')
-      .regex(/\d/, 'Include a number'),
+    password: newPasswordSchema,
     password_confirmation: z.string(),
+    // Not a visible field: the server reports an expired or invalid token under "email".
+    email: z.string().optional(),
   })
   .refine((v) => v.password === v.password_confirmation, {
     path: ['password_confirmation'],
-    message: 'Passwords do not match',
+    message: 'val.password_mismatch',
   })
-type FormValues = z.infer<typeof schema> & { email?: string }
+type FormValues = z.infer<typeof schema>
 
 export function ResetPasswordForm() {
+  const { t, tx } = useI18n()
   const params = useSearchParams()
   const router = useRouter()
   const token = params.get('token') ?? ''
@@ -45,9 +45,9 @@ export function ResetPasswordForm() {
 
   if (!token || !email) {
     return (
-      <Card title="Invalid link">
-        <p className="mb-4 text-sm text-slate-600">This reset link is missing information. Request a new one.</p>
-        <Link href="/forgot-password" className="text-sm text-indigo-600 hover:underline">Request a new link</Link>
+      <Card title={t('auth.invalid_link_title')}>
+        <p className="mb-4 text-sm text-slate-600">{t('auth.invalid_link_text')}</p>
+        <Link href="/forgot-password" className="text-sm text-indigo-600 hover:underline">{t('auth.request_new_link')}</Link>
       </Card>
     )
   }
@@ -55,25 +55,26 @@ export function ResetPasswordForm() {
   async function onSubmit(values: FormValues) {
     setFormError(null)
     try {
-      await resetPasswordRequest({ token, email, ...values })
+      await resetPasswordRequest({
+        token,
+        email,
+        password: values.password,
+        password_confirmation: values.password_confirmation,
+      })
       router.replace('/login')
     } catch (error) {
-      // Token and email errors come back keyed to "email"; show them as a form-level message.
-      const handled = applyServerErrors(error, setError)
-      if (!handled) setFormError(getErrorMessage(error))
+      if (!applyServerErrors(error, setError)) setFormError(getErrorMessage(error))
     }
   }
 
   return (
-    <Card title="Choose a new password">
+    <Card title={t('auth.choose_password')}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         {formError && <Alert kind="error">{formError}</Alert>}
-        {(errors as { email?: { message?: string } }).email?.message && (
-  <Alert kind="error">{(errors as { email?: { message?: string } }).email?.message}</Alert>)}
-        {errors.root?.message && <Alert kind="error">{errors.root.message}</Alert>}
-        <Field label="New password" type="password" autoComplete="new-password" error={errors.password?.message} {...register('password')} />
-        <Field label="Confirm new password" type="password" autoComplete="new-password" error={errors.password_confirmation?.message} {...register('password_confirmation')} />
-        <Button type="submit" loading={isSubmitting} className="w-full">Reset password</Button>
+        {errors.email?.message && <Alert kind="error">{tx(errors.email.message)}</Alert>}
+        <Field label={t('auth.new_password')} type="password" autoComplete="new-password" error={errors.password?.message} {...register('password')} />
+        <Field label={t('auth.confirm_new_password')} type="password" autoComplete="new-password" error={errors.password_confirmation?.message} {...register('password_confirmation')} />
+        <Button type="submit" loading={isSubmitting} className="w-full">{t('auth.reset_password')}</Button>
       </form>
     </Card>
   )

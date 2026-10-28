@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios'
 import type { UseFormSetError, FieldValues, Path } from 'react-hook-form'
+import { readLocaleCookie, translate } from '@/i18n/core' 
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL as string
 
@@ -23,12 +24,20 @@ export function getStatus(error: unknown): number | undefined {
   return (error as AxiosError | undefined)?.response?.status
 }
 
+for (const client of [http, api]) {
+  client.interceptors.request.use((request) => {
+    request.headers.set('Accept-Language', readLocaleCookie())
+    return request
+  })
+}
+
 export function getErrorMessage(error: unknown): string {
+  const locale = readLocaleCookie()
   const err = error as AxiosError<ApiErrorBody>
-  if (!err?.response) return 'Cannot reach the server. Check your connection and try again.'
-  if (err.response.status === 429) return 'Too many attempts. Please wait a minute and try again.'
-  if (err.response.status >= 500) return 'Something went wrong on the server. Please try again.'
-  return err.response.data?.message ?? 'Request failed.'
+  if (!err?.response) return translate(locale, 'err.network')
+  if (err.response.status === 429) return translate(locale, 'err.too_many')
+  if (err.response.status >= 500) return translate(locale, 'err.server')
+  return err.response.data?.message ?? translate(locale, 'err.request_failed')
 }
 
 /** Puts Laravel's 422 field errors next to the matching form fields. Returns true if any were applied. */

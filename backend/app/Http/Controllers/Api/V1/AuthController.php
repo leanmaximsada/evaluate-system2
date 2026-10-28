@@ -40,9 +40,10 @@ public function login(LoginRequest $request): JsonResponse
         $this->audit->log('auth.login_denied', $user, ['reason' => $reason], $user);
 
         return response()->json([
-            'message' => $reason === 'inactive'
-                ? 'Your account has been deactivated.'
-                : 'This account does not have access to the administration system.',
+        'message' => $reason === 'inactive'
+            ? __('Your account has been deactivated.')
+            : __('This account does not have access to the administration system.'),
+                
         ], 403);
     }
 
@@ -86,6 +87,6 @@ private function resetSession(Request $request): void
 
         $this->audit->log('auth.password_changed', $user);
 
-        return response()->json(['message' => 'Password updated.']);
+        return response()->json(['message' => __('Password updated.')]);
     }
 }
