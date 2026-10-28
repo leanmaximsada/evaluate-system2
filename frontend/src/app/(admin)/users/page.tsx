@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { ArrowDown, ArrowUp, Plus, Search } from 'lucide-react'
+import { ArrowDown, ArrowUp, MagnifyingGlass, Plus } from '@phosphor-icons/react'
 import { useDebounce } from '@/hooks/use-debounce'
 import { useUsers } from '@/features/users/hooks'
 import { getErrorMessage } from '@/lib/api'
@@ -59,7 +59,7 @@ export default function UsersPage() {
       <Card>
         <div className="mb-4 flex flex-wrap gap-3">
           <div className="relative min-w-56 flex-1">
-            <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" aria-hidden="true" />
+            <MagnifyingGlass className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" aria-hidden="true" />
             <input
               type="search"
               aria-label="Search by name or email"

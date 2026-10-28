@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { KeyRound, Pencil, UserCheck, UserX } from 'lucide-react'
+import { Key, PencilSimple, UserCheck, UserMinus } from '@phosphor-icons/react'
 import { useAuth } from '@/features/auth/use-auth'
 import { sendPasswordReset, setUserStatus } from '@/features/users/api'
 import { useUser, userKeys } from '@/features/users/hooks'
@@ -66,7 +66,7 @@ export default function UserDetailsPage() {
           <StatusBadge active={user.is_active} />
         </div>
         <LinkButton href={`/users/${user.id}/edit`} variant="secondary">
-          <Pencil className="h-4 w-4" aria-hidden="true" />Edit
+          <PencilSimple className="h-4 w-4" aria-hidden="true" />Edit
         </LinkButton>
       </div>
 
@@ -84,7 +84,7 @@ export default function UserDetailsPage() {
       <Card title="Security">
         <div className="flex flex-wrap gap-3">
           <Button variant="secondary" onClick={() => setConfirm('reset')} disabled={!user.is_active}>
-            <KeyRound className="h-4 w-4" aria-hidden="true" />Send password reset link
+            <Key className="h-4 w-4" aria-hidden="true" />Send password reset link
           </Button>
           <Button
             variant={user.is_active ? 'danger' : 'primary'}
@@ -93,7 +93,7 @@ export default function UserDetailsPage() {
             title={isSelf ? 'You cannot deactivate your own account' : undefined}
           >
             {user.is_active
-              ? <><UserX className="h-4 w-4" aria-hidden="true" />Deactivate account</>
+              ? <><UserMinus className="h-4 w-4" aria-hidden="true" />Deactivate account</>
               : <><UserCheck className="h-4 w-4" aria-hidden="true" />Activate account</>}
           </Button>
         </div>

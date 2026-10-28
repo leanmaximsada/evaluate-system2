@@ -3,7 +3,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, LogOut, Menu, UserCircle, Users, X } from 'lucide-react'
+import { Gear, List, SignOut, SquaresFour, UserCircle, Users, X } from '@phosphor-icons/react'
 import { useAuth } from '@/features/auth/use-auth'
 import { FullPageSpinner } from '@/components/ui/spinner'
 import { RoleBadge } from '@/components/ui/role-badge'
@@ -11,8 +11,9 @@ import { Button } from '@/components/ui/button'
 
 // Add entries here as modules are built. `permission` hides the link for users who lack it.
 const NAV = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/dashboard', label: 'Dashboard', icon: SquaresFour },
   { href: '/users', label: 'Users', icon: Users, permission: 'users.manage' },
+  { href: '/settings', label: 'Settings', icon: Gear, permission: 'settings.manage' },
   { href: '/profile', label: 'Profile', icon: UserCircle },
 ]
 function Breadcrumbs() {
@@ -104,7 +105,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         <header className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 lg:px-8">
           <div className="flex items-center gap-3">
             <button className="lg:hidden" onClick={() => setOpen(true)} aria-label="Open menu">
-              <Menu className="h-5 w-5" />
+              <List className="h-5 w-5" />
             </button>
             <Breadcrumbs />
           </div>
@@ -114,7 +115,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
               <RoleBadge role={user.role} />
             </div>
             <Button variant="secondary" onClick={handleLogout}>
-              <LogOut className="h-4 w-4" aria-hidden="true" />
+              <SignOut className="h-4 w-4" aria-hidden="true" />
               Sign out
             </Button>
           </div>
