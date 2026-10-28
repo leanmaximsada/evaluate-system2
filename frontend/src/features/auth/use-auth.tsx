@@ -36,6 +36,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     try {
       await logoutRequest()
+    } catch {
+      // Already signed out on the server (e.g. expired session). Clearing local state is enough.
     } finally {
       queryClient.clear()
       queryClient.setQueryData(['me'], null)
