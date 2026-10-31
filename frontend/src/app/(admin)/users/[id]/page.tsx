@@ -7,6 +7,7 @@ import { Key, PencilSimple, UserCheck, UserMinus } from '@phosphor-icons/react'
 import { useAuth } from '@/features/auth/use-auth'
 import { sendPasswordReset, setUserStatus } from '@/features/users/api'
 import { useUser, userKeys } from '@/features/users/hooks'
+import { useI18n } from '@/i18n/provider'
 import { getErrorMessage, getStatus } from '@/lib/api'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -21,6 +22,7 @@ import { InlineSpinner } from '@/components/ui/spinner'
 type Feedback = { kind: 'success' | 'error'; text: string }
 
 export default function UserDetailsPage() {
+  const { t, formatDateTime } = useI18n()
   const params = useParams<{ id: string }>()
   const id = Number(params.id)
   const { user: me } = useAuth()
@@ -35,7 +37,7 @@ export default function UserDetailsPage() {
     onSuccess: (updated) => {
       queryClient.setQueryData(userKeys.detail(id), updated)
       queryClient.invalidateQueries({ queryKey: userKeys.all })
-      setFeedback({ kind: 'success', text: updated.is_active ? 'Account activated.' : 'Account deactivated.' })
+      setFeedback({ kind: 'success', text: updated.is_active ? t('users.account_activated') : t('users.account_deactivated') })
     },
     onError: (e) => setFeedback({ kind: 'error', text: getErrorMessage(e) }),
     onSettled: () => setConfirm(null),
@@ -43,7 +45,7 @@ export default function UserDetailsPage() {
 
   const resetMutation = useMutation({
     mutationFn: () => sendPasswordReset(id),
-    onSuccess: () => setFeedback({ kind: 'success', text: 'Password reset link sent.' }),
+    onSuccess: () => setFeedback({ kind: 'success', text: t('users.reset_sent') }),
     onError: (e) => setFeedback({ kind: 'error', text: getErrorMessage(e) }),
     onSettled: () => setConfirm(null),
   })
@@ -51,7 +53,7 @@ export default function UserDetailsPage() {
   if (isLoading) return <InlineSpinner />
   if (isError || !user) {
     return getStatus(error) === 404
-      ? <ErrorState message="User not found." />
+      ? <ErrorState message={t('users.not_found')} />
       : <ErrorState message={getErrorMessage(error)} onRetry={() => refetch()} />
   }
 
@@ -66,49 +68,45 @@ export default function UserDetailsPage() {
           <StatusBadge active={user.is_active} />
         </div>
         <LinkButton href={`/users/${user.id}/edit`} variant="secondary">
-          <PencilSimple className="h-4 w-4" aria-hidden="true" />Edit
+          <PencilSimple className="h-4 w-4" aria-hidden="true" />{t('common.edit')}
         </LinkButton>
       </div>
 
       {feedback && <Alert kind={feedback.kind}>{feedback.text}</Alert>}
 
-      <Card title="Details">
+      <Card title={t('users.details')}>
         <dl className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
-          <div><dt className="text-slate-500">Email</dt><dd className="font-medium">{user.email}</dd></div>
-          <div><dt className="text-slate-500">Last sign-in</dt><dd className="font-medium">{user.last_login_at ? new Date(user.last_login_at).toLocaleString() : 'Never'}</dd></div>
-          <div><dt className="text-slate-500">Created</dt><dd className="font-medium">{new Date(user.created_at).toLocaleString()}</dd></div>
-          <div><dt className="text-slate-500">Last updated</dt><dd className="font-medium">{new Date(user.updated_at).toLocaleString()}</dd></div>
+          <div><dt className="text-slate-500">{t('users.email')}</dt><dd className="font-medium">{user.email}</dd></div>
+          <div><dt className="text-slate-500">{t('users.col_last_signin')}</dt><dd className="font-medium">{user.last_login_at ? formatDateTime(user.last_login_at) : t('common.never')}</dd></div>
+          <div><dt className="text-slate-500">{t('users.created')}</dt><dd className="font-medium">{formatDateTime(user.created_at)}</dd></div>
+          <div><dt className="text-slate-500">{t('users.last_updated')}</dt><dd className="font-medium">{formatDateTime(user.updated_at)}</dd></div>
         </dl>
       </Card>
 
-      <Card title="Security">
+      <Card title={t('users.security')}>
         <div className="flex flex-wrap gap-3">
           <Button variant="secondary" onClick={() => setConfirm('reset')} disabled={!user.is_active}>
-            <Key className="h-4 w-4" aria-hidden="true" />Send password reset link
+            <Key className="h-4 w-4" aria-hidden="true" />{t('users.send_reset')}
           </Button>
           <Button
             variant={user.is_active ? 'danger' : 'primary'}
             onClick={() => setConfirm('status')}
             disabled={isSelf && user.is_active}
-            title={isSelf ? 'You cannot deactivate your own account' : undefined}
+            title={isSelf ? t('users.self_title') : undefined}
           >
             {user.is_active
-              ? <><UserMinus className="h-4 w-4" aria-hidden="true" />Deactivate account</>
-              : <><UserCheck className="h-4 w-4" aria-hidden="true" />Activate account</>}
+              ? <><UserMinus className="h-4 w-4" aria-hidden="true" />{t('users.deactivate')}</>
+              : <><UserCheck className="h-4 w-4" aria-hidden="true" />{t('users.activate')}</>}
           </Button>
         </div>
-        {isSelf && <p className="mt-3 text-xs text-slate-500">This is your own account, so it cannot be deactivated here.</p>}
+        {isSelf && <p className="mt-3 text-xs text-slate-500">{t('users.self_note')}</p>}
       </Card>
 
       <ConfirmDialog
         open={confirm === 'status'}
-        title={user.is_active ? 'Deactivate this account?' : 'Activate this account?'}
-        message={
-          user.is_active
-            ? `${user.name} will be signed out immediately and will not be able to sign in until the account is reactivated.`
-            : `${user.name} will be able to sign in again.`
-        }
-        confirmLabel={user.is_active ? 'Deactivate' : 'Activate'}
+        title={user.is_active ? t('users.confirm_deactivate_title') : t('users.confirm_activate_title')}
+        message={user.is_active ? t('users.confirm_deactivate_text', { name: user.name }) : t('users.confirm_activate_text', { name: user.name })}
+        confirmLabel={user.is_active ? t('users.confirm_deactivate') : t('users.confirm_activate')}
         danger={user.is_active}
         loading={statusMutation.isPending}
         onConfirm={() => statusMutation.mutate(!user.is_active)}
@@ -117,9 +115,9 @@ export default function UserDetailsPage() {
 
       <ConfirmDialog
         open={confirm === 'reset'}
-        title="Send a password reset link?"
-        message={`An email with a reset link will be sent to ${user.email}.`}
-        confirmLabel="Send link"
+        title={t('users.confirm_reset_title')}
+        message={t('users.confirm_reset_text', { email: user.email })}
+        confirmLabel={t('users.confirm_reset')}
         loading={resetMutation.isPending}
         onConfirm={() => resetMutation.mutate()}
         onCancel={() => setConfirm(null)}

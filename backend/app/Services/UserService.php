@@ -17,13 +17,21 @@ class UserService
     public function create(array $data, User $actor): User
     {
         return DB::transaction(function () use ($data, $actor) {
-            $user = new User(['name' => $data['name'], 'email' => $data['email'], 'password' => $data['password']]);
+            $user = new User([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => $data['password']
+            ]);
+
             $user->role = Role::from($data['role']);
             $user->is_active = true;
             $user->email_verified_at = Carbon::now();
             $user->save();
 
-            $this->audit->log('user.created', $user, ['email' => $user->email, 'role' => $user->role->value], $actor);
+            $this->audit->log('user.created', $user, [
+                'email' => $user->email,
+                'role' => $user->role->value
+            ], $actor);
 
             return $user;
         });
@@ -39,19 +47,37 @@ class UserService
 
             if ($roleChanged) {
                 if ($target->is($actor)) {
-                    throw ValidationException::withMessages(['role' => ['You cannot change your own role.']]);
+                    throw ValidationException::withMessages([
+                        'role' => [__('You cannot change your own role.')]
+                    ]);
                 }
-                $this->assertNotLastActiveSuperAdmin($target, 'role', 'The last active Super Admin cannot be demoted.');
+
+                $this->assertNotLastActiveSuperAdmin(
+                    $target,
+                    'role',
+                    __('The last active Super Admin cannot be demoted.')
+                );
             }
 
-            $target->fill(['name' => $data['name'], 'email' => $data['email']]);
+            $target->fill([
+                'name' => $data['name'],
+                'email' => $data['email']
+            ]);
+
             $target->role = $newRole;
-            $profileFields = array_values(array_diff(array_keys($target->getDirty()), ['role']));
+
+            $profileFields = array_values(
+                array_diff(array_keys($target->getDirty()), ['role'])
+            );
+
             $target->save();
 
             if ($profileFields !== []) {
-                $this->audit->log('user.updated', $target, ['fields' => $profileFields], $actor);
+                $this->audit->log('user.updated', $target, [
+                    'fields' => $profileFields
+                ], $actor);
             }
+
             if ($roleChanged) {
                 $this->audit->log('user.role_changed', $target, [
                     'from' => $previousRole?->value,
@@ -68,9 +94,16 @@ class UserService
         return DB::transaction(function () use ($target, $active, $actor) {
             if (! $active) {
                 if ($target->is($actor)) {
-                    throw ValidationException::withMessages(['is_active' => ['You cannot deactivate your own account.']]);
+                    throw ValidationException::withMessages([
+                        'is_active' => [__('You cannot deactivate your own account.')]
+                    ]);
                 }
-                $this->assertNotLastActiveSuperAdmin($target, 'is_active', 'The last active Super Admin cannot be deactivated.');
+
+                $this->assertNotLastActiveSuperAdmin(
+                    $target,
+                    'is_active',
+                    __('The last active Super Admin cannot be deactivated.')
+                );
             }
 
             if ($target->is_active === $active) {
@@ -86,7 +119,12 @@ class UserService
                 $target->tokens()->delete();
             }
 
-            $this->audit->log($active ? 'user.activated' : 'user.deactivated', $target, [], $actor);
+            $this->audit->log(
+                $active ? 'user.activated' : 'user.deactivated',
+                $target,
+                [],
+                $actor
+            );
 
             return $target;
         });
@@ -95,25 +133,38 @@ class UserService
     public function sendPasswordReset(User $target, User $actor): void
     {
         if (! $target->is_active) {
-            throw ValidationException::withMessages(['user' => ['Cannot send a reset link to a deactivated account.']]);
+            throw ValidationException::withMessages([
+                'user' => [__('Cannot send a reset link to a deactivated account.')]
+            ]);
         }
 
         $status = Password::sendResetLink(['email' => $target->email]);
 
-        // 'passwords.sent' is Laravel's status string for a sent link; anything else is a throttle or failure.
+        // 'passwords.sent' is Laravel's status string for a sent link;
+        // anything else is a throttle or failure.
         if ($status !== 'passwords.sent') {
-            throw ValidationException::withMessages(['user' => [__($status)]]);
+            throw ValidationException::withMessages([
+                'user' => [__($status)]
+            ]);
         }
 
-        $this->audit->log('user.password_reset_requested', $target, [], $actor);
+        $this->audit->log(
+            'user.password_reset_requested',
+            $target,
+            [],
+            $actor
+        );
     }
 
     /**
      * Must run inside a transaction. Locking the other Super Admin rows makes two
      * simultaneous demotions deadlock (one aborts) instead of leaving zero Super Admins.
      */
-    private function assertNotLastActiveSuperAdmin(User $target, string $field, string $message): void
-    {
+    private function assertNotLastActiveSuperAdmin(
+        User $target,
+        string $field,
+        string $message
+    ): void {
         if ($target->role !== Role::SuperAdmin || ! $target->is_active) {
             return;
         }
@@ -126,7 +177,9 @@ class UserService
             ->pluck('id');
 
         if ($others->isEmpty()) {
-            throw ValidationException::withMessages([$field => [$message]]);
+            throw ValidationException::withMessages([
+                $field => [$message]
+            ]);
         }
     }
 }

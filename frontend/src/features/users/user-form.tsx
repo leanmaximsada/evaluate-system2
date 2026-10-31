@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { User } from '@/types'
+import { useI18n } from '@/i18n/provider'
 import { applyServerErrors, getErrorMessage } from '@/lib/api'
 import { Field } from '@/components/ui/field'
 import { SelectField } from '@/components/ui/select-field'
@@ -16,8 +17,8 @@ import { RoleBadge } from '@/components/ui/role-badge'
 function makeSchema(requirePassword: boolean) {
   return z
     .object({
-      name: z.string().trim().min(1, 'Name is required').max(255),
-      email: z.string().trim().min(1, 'Email is required').email('Enter a valid email address'),
+      name: z.string().trim().min(1, 'val.name_required').max(255, 'val.name_max'),
+      email: z.string().trim().min(1, 'val.email_required').email('val.email_invalid'),
       role: z.enum(['super_admin', 'admin', 'judge']),
       password: z.string().optional(),
       password_confirmation: z.string().optional(),
@@ -26,13 +27,13 @@ function makeSchema(requirePassword: boolean) {
       if (!requirePassword) return
       const pw = v.password ?? ''
       let message: string | null = null
-      if (pw.length < 10) message = 'Use at least 10 characters'
-      else if (!/[a-z]/.test(pw)) message = 'Include a lowercase letter'
-      else if (!/[A-Z]/.test(pw)) message = 'Include an uppercase letter'
-      else if (!/\d/.test(pw)) message = 'Include a number'
+      if (pw.length < 10) message = 'val.password_min'
+      else if (!/[a-z]/.test(pw)) message = 'val.password_lower'
+      else if (!/[A-Z]/.test(pw)) message = 'val.password_upper'
+      else if (!/\d/.test(pw)) message = 'val.password_number'
       if (message) ctx.addIssue({ code: 'custom', path: ['password'], message })
       if (pw !== (v.password_confirmation ?? '')) {
-        ctx.addIssue({ code: 'custom', path: ['password_confirmation'], message: 'Passwords do not match' })
+        ctx.addIssue({ code: 'custom', path: ['password_confirmation'], message: 'val.password_mismatch' })
       }
     })
 }
@@ -49,6 +50,7 @@ interface Props {
 }
 
 export function UserForm({ initial, submitLabel, cancelHref, roleLocked = false, onSubmit }: Props) {
+  const { t } = useI18n()
   const isEdit = !!initial
   const schema = useMemo(() => makeSchema(!isEdit), [isEdit])
   const [formError, setFormError] = useState<string | null>(null)
@@ -82,38 +84,33 @@ export function UserForm({ initial, submitLabel, cancelHref, roleLocked = false,
     <form onSubmit={handleSubmit(submit)} className="space-y-4" noValidate>
       {formError && <Alert kind="error">{formError}</Alert>}
 
-      <Field label="Full name" autoComplete="off" error={errors.name?.message} {...register('name')} />
-      <Field label="Email" type="email" autoComplete="off" error={errors.email?.message} {...register('email')} />
+      <Field label={t('users.full_name')} autoComplete="off" error={errors.name?.message} {...register('name')} />
+      <Field label={t('users.email')} type="email" autoComplete="off" error={errors.email?.message} {...register('email')} />
 
       {roleLocked && initial ? (
         <div className="space-y-1">
-          <p className="text-sm font-medium text-slate-700">Role</p>
+          <p className="text-sm font-medium text-slate-700">{t('users.role')}</p>
           <RoleBadge role={initial.role} />
-          <p className="text-xs text-slate-500">You cannot change your own role.</p>
+          <p className="text-xs text-slate-500">{t('users.role_locked')}</p>
         </div>
       ) : (
-        <SelectField
-          label="Role"
-          error={errors.role?.message}
-          hint="Judges cannot sign in to the admin system yet; they are assigned to events in a later phase."
-          {...register('role')}
-        >
-          <option value="admin">Admin</option>
-          <option value="super_admin">Super Admin</option>
-          <option value="judge">Judge</option>
+        <SelectField label={t('users.role')} error={errors.role?.message} hint={t('users.role_hint')} {...register('role')}>
+          <option value="admin">{t('role.admin')}</option>
+          <option value="super_admin">{t('role.super_admin')}</option>
+          <option value="judge">{t('role.judge')}</option>
         </SelectField>
       )}
 
       {!isEdit && (
         <>
-          <Field label="Password" type="password" autoComplete="new-password" error={errors.password?.message} {...register('password')} />
-          <Field label="Confirm password" type="password" autoComplete="new-password" error={errors.password_confirmation?.message} {...register('password_confirmation')} />
+          <Field label={t('users.password')} type="password" autoComplete="new-password" error={errors.password?.message} {...register('password')} />
+          <Field label={t('users.confirm_password')} type="password" autoComplete="new-password" error={errors.password_confirmation?.message} {...register('password_confirmation')} />
         </>
       )}
 
       <div className="flex gap-2 pt-2">
         <Button type="submit" loading={isSubmitting}>{submitLabel}</Button>
-        <LinkButton href={cancelHref} variant="secondary">Cancel</LinkButton>
+        <LinkButton href={cancelHref} variant="secondary">{t('common.cancel')}</LinkButton>
       </div>
     </form>
   )

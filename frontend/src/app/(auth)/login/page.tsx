@@ -49,7 +49,7 @@ export default function LoginPage() {
   }
 
   return (
-    <Card title={t('auth.sign_in')}>
+    <Card title={t('auth.sign_in')} description={t('auth.subtitle')}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         {formError && <Alert kind="error">{formError}</Alert>}
         <Field label={t('auth.email')} type="email" autoComplete="email" error={errors.email?.message} {...register('email')} />

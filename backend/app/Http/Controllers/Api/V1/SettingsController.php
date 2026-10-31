@@ -38,4 +38,15 @@ class SettingsController extends Controller
             'timezone' => config('app.timezone'),
         ];
     }
+
+    /** Public and unauthenticated: expose ONLY these two non-sensitive values. */
+    public function publicShow(): JsonResponse
+    {
+        $general = $this->settings->all()['general'];
+
+        return response()->json(['data' => [
+            'system_name' => $general['system_name'],
+            'default_language' => $general['default_language'],
+        ]]);
+    }
 }

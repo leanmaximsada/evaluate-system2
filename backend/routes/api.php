@@ -1,11 +1,12 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\PasswordResetController;
+use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\V1\SettingsController;
 
 Route::prefix('v1')->group(function () {
     Route::get('health', function () {
@@ -13,6 +14,8 @@ Route::prefix('v1')->group(function () {
 
         return response()->json(['status' => 'ok']);
     });
+
+    Route::get('public/settings', [SettingsController::class, 'publicShow'])->middleware('throttle:60,1');
 
     Route::prefix('auth')->group(function () {
         Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login');
@@ -27,10 +30,13 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::middleware(['auth:sanctum', 'active'])->group(function () {
-        Route::get('settings', [SettingsController::class, 'show']);
-        Route::put('settings', [SettingsController::class, 'update']);
+        Route::get('dashboard', DashboardController::class);
+
         Route::apiResource('users', UserController::class)->except('destroy');
         Route::patch('users/{user}/status', [UserController::class, 'updateStatus']);
         Route::post('users/{user}/password-reset', [UserController::class, 'sendPasswordReset'])->middleware('throttle:password-reset');
+
+        Route::get('settings', [SettingsController::class, 'show']);
+        Route::put('settings', [SettingsController::class, 'update']);
     });
 });

@@ -1,4 +1,7 @@
+'use client'
+
 import type { Paginated } from '@/types'
+import { useI18n } from '@/i18n/provider'
 import { Button } from './button'
 
 export function Pagination({
@@ -10,18 +13,19 @@ export function Pagination({
   onPage: (page: number) => void
   disabled?: boolean
 }) {
+  const { t } = useI18n()
   if (meta.total === 0) return null
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
-      <p>Showing {meta.from}–{meta.to} of {meta.total}</p>
+      <p>{t('pagination.showing', { from: meta.from ?? 0, to: meta.to ?? 0, total: meta.total })}</p>
       <div className="flex items-center gap-2">
         <Button variant="secondary" disabled={disabled || meta.current_page <= 1} onClick={() => onPage(meta.current_page - 1)}>
-          Previous
+          {t('common.previous')}
         </Button>
-        <span>Page {meta.current_page} of {meta.last_page}</span>
+        <span>{t('pagination.page', { page: meta.current_page, last: meta.last_page })}</span>
         <Button variant="secondary" disabled={disabled || meta.current_page >= meta.last_page} onClick={() => onPage(meta.current_page + 1)}>
-          Next
+          {t('common.next')}
         </Button>
       </div>
     </div>

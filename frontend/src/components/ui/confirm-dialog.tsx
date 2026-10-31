@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { Button } from './button'
+import { useI18n } from '@/i18n/provider'
 
 interface Props {
   open: boolean
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export function ConfirmDialog({ open, title, message, confirmLabel, danger = false, loading = false, onConfirm, onCancel }: Props) {
+  const { t } = useI18n()
   const ref = useRef<HTMLDialogElement>(null)
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export function ConfirmDialog({ open, title, message, confirmLabel, danger = fal
       <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
       <p className="mt-2 text-sm text-slate-600">{message}</p>
       <div className="mt-6 flex justify-end gap-2">
-        <Button variant="secondary" onClick={onCancel} disabled={loading}>Cancel</Button>
+        <Button variant="secondary" onClick={onCancel} disabled={loading}>{t('common.cancel')}</Button>
         <Button variant={danger ? 'danger' : 'primary'} onClick={onConfirm} loading={loading}>{confirmLabel}</Button>
       </div>
     </dialog>

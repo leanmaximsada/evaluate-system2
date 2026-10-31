@@ -44,4 +44,14 @@ class LocalizationTest extends TestCase
         $this->spa()->withHeader('Accept-Language', 'km')->postJson(self::LOGIN, [])
             ->assertHeader('Content-Language', 'km');
     }
+    public function test_user_management_messages_are_translated(): void
+{
+    $super = User::factory()->superAdmin()->create();
+
+    $this->spa()->actingAs($super, 'sanctum')->withHeader('Accept-Language', 'km')
+        ->patchJson("/api/v1/users/{$super->id}/status", ['is_active' => false])
+        ->assertUnprocessable()
+        ->assertJsonPath('errors.is_active.0', 'អ្នកមិនអាចបិទគណនីរបស់អ្នកផ្ទាល់បានទេ។');
+}
+
 }

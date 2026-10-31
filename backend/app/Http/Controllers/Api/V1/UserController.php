@@ -68,6 +68,6 @@ class UserController extends Controller
 
         $this->users->sendPasswordReset($user, $request->user());
 
-        return response()->json(['message' => 'Password reset link sent.']);
+        return response()->json(['message' => __('Password reset link sent.')]);
     }
 }

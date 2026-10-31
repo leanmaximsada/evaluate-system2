@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { ArrowDown, ArrowUp, MagnifyingGlass, Plus } from '@phosphor-icons/react'
 import { useDebounce } from '@/hooks/use-debounce'
 import { useUsers } from '@/features/users/hooks'
+import { useI18n } from '@/i18n/provider'
+import type { MessageKey } from '@/i18n/messages/en'
 import { getErrorMessage } from '@/lib/api'
 import type { Role } from '@/types'
 import { Card } from '@/components/ui/card'
@@ -15,18 +17,19 @@ import { Pagination } from '@/components/ui/pagination'
 import { ErrorState } from '@/components/ui/error-state'
 import { InlineSpinner } from '@/components/ui/spinner'
 
-const COLUMNS = [
-  { key: 'name', label: 'Name', sortable: true },
-  { key: 'email', label: 'Email', sortable: true },
-  { key: 'role', label: 'Role', sortable: true },
-  { key: 'status', label: 'Status', sortable: false },
-  { key: 'last_login_at', label: 'Last sign-in', sortable: true },
-  { key: 'created_at', label: 'Created', sortable: true },
+const COLUMNS: { key: string; labelKey: MessageKey; sortable: boolean }[] = [
+  { key: 'name', labelKey: 'users.col_name', sortable: true },
+  { key: 'email', labelKey: 'users.col_email', sortable: true },
+  { key: 'role', labelKey: 'users.col_role', sortable: true },
+  { key: 'status', labelKey: 'users.col_status', sortable: false },
+  { key: 'last_login_at', labelKey: 'users.col_last_signin', sortable: true },
+  { key: 'created_at', labelKey: 'users.col_created', sortable: true },
 ]
 
 const selectClass = 'rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-2 focus:outline-indigo-600'
 
 export default function UsersPage() {
+  const { t, formatDate, formatDateTime } = useI18n()
   const [search, setSearch] = useState('')
   const [role, setRole] = useState<Role | ''>('')
   const [status, setStatus] = useState<'' | 'active' | 'inactive'>('')
@@ -52,8 +55,8 @@ export default function UsersPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold">Users</h1>
-        <LinkButton href="/users/new"><Plus className="h-4 w-4" aria-hidden="true" />New user</LinkButton>
+        <h1 className="text-2xl font-semibold">{t('users.title')}</h1>
+        <LinkButton href="/users/new"><Plus className="h-4 w-4" aria-hidden="true" />{t('users.new_user')}</LinkButton>
       </div>
 
       <Card>
@@ -62,23 +65,23 @@ export default function UsersPage() {
             <MagnifyingGlass className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" aria-hidden="true" />
             <input
               type="search"
-              aria-label="Search by name or email"
-              placeholder="Search by name or email"
+              aria-label={t('users.search_placeholder')}
+              placeholder={t('users.search_placeholder')}
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1) }}
               className="w-full rounded-md border border-slate-300 py-2 pl-9 pr-3 text-sm focus:outline-2 focus:outline-indigo-600"
             />
           </div>
-          <select aria-label="Filter by role" className={selectClass} value={role} onChange={(e) => { setRole(e.target.value as Role | ''); setPage(1) }}>
-            <option value="">All roles</option>
-            <option value="super_admin">Super Admin</option>
-            <option value="admin">Admin</option>
-            <option value="judge">Judge</option>
+          <select aria-label={t('users.filter_role')} className={selectClass} value={role} onChange={(e) => { setRole(e.target.value as Role | ''); setPage(1) }}>
+            <option value="">{t('users.all_roles')}</option>
+            <option value="super_admin">{t('role.super_admin')}</option>
+            <option value="admin">{t('role.admin')}</option>
+            <option value="judge">{t('role.judge')}</option>
           </select>
-          <select aria-label="Filter by status" className={selectClass} value={status} onChange={(e) => { setStatus(e.target.value as '' | 'active' | 'inactive'); setPage(1) }}>
-            <option value="">All statuses</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
+          <select aria-label={t('users.filter_status')} className={selectClass} value={status} onChange={(e) => { setStatus(e.target.value as '' | 'active' | 'inactive'); setPage(1) }}>
+            <option value="">{t('users.all_statuses')}</option>
+            <option value="active">{t('common.active')}</option>
+            <option value="inactive">{t('common.inactive')}</option>
           </select>
         </div>
 
@@ -87,9 +90,7 @@ export default function UsersPage() {
         ) : isError ? (
           <ErrorState message={getErrorMessage(error)} onRetry={() => refetch()} />
         ) : data && data.data.length === 0 ? (
-          <p className="py-10 text-center text-sm text-slate-500">
-            {hasFilters ? 'No users match your filters.' : 'No users yet.'}
-          </p>
+          <p className="py-10 text-center text-sm text-slate-500">{hasFilters ? t('users.no_match') : t('users.none')}</p>
         ) : (
           data && (
             <div className="space-y-4">
@@ -106,11 +107,11 @@ export default function UsersPage() {
                         >
                           {col.sortable ? (
                             <button onClick={() => toggleSort(col.key)} className="inline-flex items-center gap-1 hover:text-slate-900">
-                              {col.label}
+                              {t(col.labelKey)}
                               {sort.key === col.key && (sort.dir === 'asc' ? <ArrowUp className="h-3 w-3" aria-hidden="true" /> : <ArrowDown className="h-3 w-3" aria-hidden="true" />)}
                             </button>
                           ) : (
-                            col.label
+                            t(col.labelKey)
                           )}
                         </th>
                       ))}
@@ -125,8 +126,8 @@ export default function UsersPage() {
                         <td className="px-3 py-3 text-slate-600">{u.email}</td>
                         <td className="px-3 py-3"><RoleBadge role={u.role} /></td>
                         <td className="px-3 py-3"><StatusBadge active={u.is_active} /></td>
-                        <td className="px-3 py-3 text-slate-600">{u.last_login_at ? new Date(u.last_login_at).toLocaleString() : 'Never'}</td>
-                        <td className="px-3 py-3 text-slate-600">{new Date(u.created_at).toLocaleDateString()}</td>
+                        <td className="px-3 py-3 text-slate-600">{u.last_login_at ? formatDateTime(u.last_login_at) : t('common.never')}</td>
+                        <td className="px-3 py-3 text-slate-600">{formatDate(u.created_at)}</td>
                       </tr>
                     ))}
                   </tbody>

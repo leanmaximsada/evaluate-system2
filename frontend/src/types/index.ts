@@ -54,3 +54,8 @@ export interface SystemInfo {
   broadcast_driver: string
   timezone: string
 }
+
+export interface DashboardData {
+  users: { total: number; active: number; admins: number; judges: number } | null
+  activity: { id: number; action: string; actor: string | null; created_at: string }[] | null
+}

@@ -4,5 +4,11 @@
     "Password updated.": "ពាក្យសម្ងាត់ត្រូវបានធ្វើបច្ចុប្បន្នភាព។",
     "The current password is incorrect.": "ពាក្យសម្ងាត់បច្ចុប្បន្នមិនត្រឹមត្រូវទេ។",
     "If that email address is registered, a reset link has been sent.": "ប្រសិនបើអ៊ីមែលនេះបានចុះឈ្មោះ តំណកំណត់ឡើងវិញត្រូវបានផ្ញើហើយ។",
-    "Your password has been reset.": "ពាក្យសម្ងាត់របស់អ្នកត្រូវបានកំណត់ឡើងវិញ។"
+    "Your password has been reset.": "ពាក្យសម្ងាត់របស់អ្នកត្រូវបានកំណត់ឡើងវិញ។",
+    "You cannot change your own role.": "អ្នកមិនអាចប្ដូរតួនាទីរបស់ខ្លួនឯងបានទេ។",
+    "The last active Super Admin cannot be demoted.": "អ្នកគ្រប់គ្រងជាន់ខ្ពស់សកម្មចុងក្រោយមិនអាចត្រូវបានបន្ទាបតួនាទីបានទេ។",
+    "You cannot deactivate your own account.": "អ្នកមិនអាចបិទគណនីរបស់អ្នកផ្ទាល់បានទេ។",
+    "The last active Super Admin cannot be deactivated.": "អ្នកគ្រប់គ្រងជាន់ខ្ពស់សកម្មចុងក្រោយមិនអាចត្រូវបានបិទបានទេ។",
+    "Cannot send a reset link to a deactivated account.": "មិនអាចផ្ញើតំណកំណត់ឡើងវិញទៅគណនីដែលត្រូវបានបិទបានទេ។",
+    "Password reset link sent.": "បានផ្ញើតំណកំណត់ពាក្យសម្ងាត់ឡើងវិញ។"
 }
