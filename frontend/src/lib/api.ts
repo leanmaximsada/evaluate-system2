@@ -41,12 +41,21 @@ export function getErrorMessage(error: unknown): string {
 }
 
 /** Puts Laravel's 422 field errors next to the matching form fields. Returns true if any were applied. */
-export function applyServerErrors<T extends FieldValues>(error: unknown, setError: UseFormSetError<T>): boolean {
+/** Puts Laravel's 422 field errors next to matching form fields. Returns true if any were applied. */
+export function applyServerErrors<T extends FieldValues>(
+  error: unknown,
+  setError: UseFormSetError<T>,
+  fields?: string[],
+): boolean {
   const err = error as AxiosError<ApiErrorBody>
   const errors = err?.response?.status === 422 ? err.response.data?.errors : undefined
   if (!errors) return false
+
+  let applied = false
   Object.entries(errors).forEach(([field, messages]) => {
+    if (fields && !fields.includes(field)) return
     setError(field as Path<T>, { type: 'server', message: messages[0] })
+    applied = true
   })
-  return true
+  return applied
 }

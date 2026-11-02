@@ -3,7 +3,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Gear, List, SignOut, SquaresFour, Trophy, UserCircle, Users, X, type Icon } from '@phosphor-icons/react'
+import { Gear, List, SignOut, SquaresFour, Trophy, UserCircle, Users, X,CalendarBlank, type Icon } from '@phosphor-icons/react'
 import { useAuth } from '@/features/auth/use-auth'
 import { useI18n } from '@/i18n/provider'
 import type { MessageKey } from '@/i18n/messages/en'
@@ -16,7 +16,12 @@ interface NavItem { href: string; labelKey: MessageKey; icon: Icon; permission?:
 
 // Add entries here as modules are built. `permission` hides the link for users who lack it.
 const SECTIONS: { labelKey: MessageKey; items: NavItem[] }[] = [
+  
   { labelKey: 'nav.section_overview', items: [{ href: '/dashboard', labelKey: 'nav.dashboard', icon: SquaresFour }] },
+   {
+    labelKey: 'nav.section_manage',
+    items: [{ href: '/events', labelKey: 'nav.events', icon: CalendarBlank, permission: 'events.manage' }],
+  },
   {
     labelKey: 'nav.section_admin',
     items: [
@@ -28,6 +33,7 @@ const SECTIONS: { labelKey: MessageKey; items: NavItem[] }[] = [
 ]
 
 const SEGMENTS: Record<string, MessageKey> = {
+  
   dashboard: 'nav.dashboard',
   users: 'nav.users',
   settings: 'nav.settings',
@@ -35,6 +41,9 @@ const SEGMENTS: Record<string, MessageKey> = {
   forbidden: 'forbidden.title',
   new: 'common.new',
   edit: 'common.edit',
+  events: 'nav.events',
+  participants: 'events.tab_participants',
+  judges: 'events.tab_judges',
 }
 
 function Brand() {

@@ -7,6 +7,12 @@ use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\EventController;
+use App\Http\Controllers\Api\V1\EventJudgeController;
+use App\Http\Controllers\Api\V1\ParticipantController;
+use App\Http\Controllers\Api\V1\EvaluationFormController;
+use App\Http\Controllers\Api\V1\FormCriterionController;
+use App\Http\Controllers\Api\V1\FormVersionController;
 
 Route::prefix('v1')->group(function () {
     Route::get('health', function () {
@@ -30,6 +36,48 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::middleware(['auth:sanctum', 'active'])->group(function () {
+            Route::middleware('can:events.manage')->group(function () {
+            Route::apiResource('events', EventController::class)->except('destroy');
+            Route::patch('events/{event}/status', [EventController::class, 'updateStatus']);
+            Route::put('events/{event}/form', [EventController::class, 'assignForm']);
+            Route::delete('events/{event}/form', [EventController::class, 'clearForm']);
+
+                    Route::middleware('can:forms.manage')->prefix('evaluation-forms')->group(function () {
+            Route::get('/', [EvaluationFormController::class, 'index']);
+            Route::post('/', [EvaluationFormController::class, 'store']);
+
+            Route::scopeBindings()->group(function () {
+                Route::get('{form}', [EvaluationFormController::class, 'show']);
+                Route::put('{form}', [EvaluationFormController::class, 'update']);
+                Route::patch('{form}/status', [EvaluationFormController::class, 'updateStatus']);
+
+                Route::post('{form}/versions', [FormVersionController::class, 'store']);
+                Route::get('{form}/versions/{version}', [FormVersionController::class, 'show']);
+                Route::put('{form}/versions/{version}', [FormVersionController::class, 'update']);
+                Route::post('{form}/versions/{version}/publish', [FormVersionController::class, 'publish']);
+
+                Route::post('{form}/versions/{version}/criteria', [FormCriterionController::class, 'store']);
+                Route::put('{form}/versions/{version}/criteria/order', [FormCriterionController::class, 'reorder']);
+                Route::put('{form}/versions/{version}/criteria/{criterion}', [FormCriterionController::class, 'update']);
+                Route::delete('{form}/versions/{version}/criteria/{criterion}', [FormCriterionController::class, 'destroy']);
+            });
+        });
+
+            Route::scopeBindings()->group(function () {
+                Route::get('events/{event}/participants', [ParticipantController::class, 'index']);
+                Route::post('events/{event}/participants', [ParticipantController::class, 'store']);
+                Route::put('events/{event}/participants/order', [ParticipantController::class, 'reorder']);
+                Route::put('events/{event}/participants/{participant}', [ParticipantController::class, 'update']);
+                Route::delete('events/{event}/participants/{participant}', [ParticipantController::class, 'destroy']);
+            });
+        });
+
+        Route::middleware('can:judges.assign')->group(function () {
+            Route::get('events/{event}/judges', [EventJudgeController::class, 'index']);
+            Route::get('events/{event}/judge-candidates', [EventJudgeController::class, 'candidates']);
+            Route::post('events/{event}/judges', [EventJudgeController::class, 'store']);
+            Route::delete('events/{event}/judges/{user}', [EventJudgeController::class, 'destroy']);
+        });
         Route::get('dashboard', DashboardController::class);
 
         Route::apiResource('users', UserController::class)->except('destroy');
@@ -39,4 +87,6 @@ Route::prefix('v1')->group(function () {
         Route::get('settings', [SettingsController::class, 'show']);
         Route::put('settings', [SettingsController::class, 'update']);
     });
+
+    
 });

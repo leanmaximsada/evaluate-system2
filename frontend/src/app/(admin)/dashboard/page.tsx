@@ -1,12 +1,14 @@
 'use client'
 
-import { CalendarBlank, CheckCircle, Gavel, HourglassMedium, ShieldCheck, UserCheck, Users, UsersThree } from '@phosphor-icons/react'
+import Link from 'next/link'
+import { CalendarBlank, CheckCircle, Gavel, HourglassMedium, Lightning, Clock, ShieldCheck, UserCheck, Users, UsersThree } from '@phosphor-icons/react'
 import { useAuth } from '@/features/auth/use-auth'
 import { useDashboard } from '@/features/dashboard/hooks'
 import { useI18n } from '@/i18n/provider'
 import { getErrorMessage } from '@/lib/api'
 import { Card } from '@/components/ui/card'
 import { StatCard } from '@/components/ui/stat-card'
+import { EventStatusBadge } from '@/components/ui/event-status-badge'
 import { ErrorState } from '@/components/ui/error-state'
 import { InlineSpinner } from '@/components/ui/spinner'
 
@@ -28,6 +30,23 @@ export default function DashboardPage() {
         <ErrorState message={getErrorMessage(error)} onRetry={() => refetch()} />
       ) : (
         <>
+          {data.events && (
+            <>
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <StatCard label={t('dashboard.events_total')} value={data.events.total} icon={CalendarBlank} />
+                <StatCard label={t('dashboard.events_active')} value={data.events.by_status.in_progress} icon={Lightning} />
+                <StatCard label={t('dashboard.events_upcoming')} value={data.events.by_status.upcoming} hint={t('dashboard.hint_draft', { n: data.events.by_status.draft })} icon={Clock} />
+                <StatCard label={t('dashboard.events_completed')} value={data.events.by_status.completed} icon={CheckCircle} />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <StatCard label={t('dashboard.participants')} value={data.events.participants} icon={UsersThree} />
+                <StatCard label={t('dashboard.judges_assigned')} value={data.events.judges} icon={Gavel} />
+                <StatCard label={t('dashboard.completion')} value="—" hint={t('dashboard.coming')} icon={CheckCircle} />
+                <StatCard label={t('dashboard.pending')} value="—" hint={t('dashboard.coming')} icon={HourglassMedium} />
+              </div>
+            </>
+          )}
+
           {data.users && (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <StatCard label={t('dashboard.users_total')} value={data.users.total} icon={Users} />
@@ -37,33 +56,48 @@ export default function DashboardPage() {
             </div>
           )}
 
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard label={t('dashboard.events')} value="—" hint={t('dashboard.coming')} icon={CalendarBlank} />
-            <StatCard label={t('dashboard.participants')} value="—" hint={t('dashboard.coming')} icon={UsersThree} />
-            <StatCard label={t('dashboard.completion')} value="—" hint={t('dashboard.coming')} icon={CheckCircle} />
-            <StatCard label={t('dashboard.pending')} value="—" hint={t('dashboard.coming')} icon={HourglassMedium} />
-          </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            {data.events && (
+              <Card title={t('dashboard.recent_events')} description={t('dashboard.recent_events_sub')}>
+                {data.events.recent.length === 0 ? (
+                  <p className="py-6 text-center text-sm text-slate-500">{t('dashboard.no_events')}</p>
+                ) : (
+                  <ul className="divide-y divide-slate-100">
+                    {data.events.recent.map((e) => (
+                      <li key={e.id} className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+                        <div>
+                          <Link href={`/events/${e.id}`} className="text-sm font-medium text-slate-900 hover:underline">{e.name}</Link>
+                          <p className="text-sm text-slate-500">{formatDateTime(e.updated_at)}</p>
+                        </div>
+                        <EventStatusBadge status={e.status} />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Card>
+            )}
 
-          {data.activity ? (
-            <Card title={t('dashboard.activity')} description={t('dashboard.activity_sub')}>
-              {data.activity.length === 0 ? (
-                <p className="py-6 text-center text-sm text-slate-500">{t('dashboard.no_activity')}</p>
-              ) : (
-                <ul className="divide-y divide-slate-100">
-                  {data.activity.map((item) => (
-                    <li key={item.id} className="py-3 first:pt-0 last:pb-0">
-                      <p className="text-sm font-medium text-slate-900">{item.action}</p>
-                      <p className="text-sm text-slate-500">{item.actor ?? t('common.system')} · {formatDateTime(item.created_at)}</p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Card>
-          ) : (
-            <Card>
-              <p className="text-sm text-slate-700">{t('dashboard.welcome', { name: user?.name ?? '' })}</p>
-            </Card>
-          )}
+            {data.activity ? (
+              <Card title={t('dashboard.activity')} description={t('dashboard.activity_sub')}>
+                {data.activity.length === 0 ? (
+                  <p className="py-6 text-center text-sm text-slate-500">{t('dashboard.no_activity')}</p>
+                ) : (
+                  <ul className="divide-y divide-slate-100">
+                    {data.activity.map((item) => (
+                      <li key={item.id} className="py-3 first:pt-0 last:pb-0">
+                        <p className="text-sm font-medium text-slate-900">{item.action}</p>
+                        <p className="text-sm text-slate-500">{item.actor ?? t('common.system')} · {formatDateTime(item.created_at)}</p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Card>
+            ) : (
+              !data.events && (
+                <Card><p className="text-sm text-slate-700">{t('dashboard.welcome', { name: user?.name ?? '' })}</p></Card>
+              )
+            )}
+          </div>
         </>
       )}
     </div>
