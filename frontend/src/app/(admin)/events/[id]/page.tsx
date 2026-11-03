@@ -16,6 +16,7 @@ import { Alert } from '@/components/ui/alert'
 import { StatCard } from '@/components/ui/stat-card'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { UsersThree, Gavel } from '@phosphor-icons/react'
+import { EventFormPicker } from '@/features/events/event-form-picker'
 
 type Feedback = { kind: 'success' | 'error'; text: string }
 
@@ -80,6 +81,8 @@ export default function EventOverviewPage() {
           </div>
         )}
       </Card>
+
+      <EventFormPicker event={event} />
 
       <Card title={t('events.status_card')} description={t('events.status_hint')}>
         {event.allowed_transitions.length === 0 ? (

@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\ParticipantController;
 use App\Http\Controllers\Api\V1\EvaluationFormController;
 use App\Http\Controllers\Api\V1\FormCriterionController;
 use App\Http\Controllers\Api\V1\FormVersionController;
+use App\Http\Controllers\Api\V1\ResultController;
 
 Route::prefix('v1')->group(function () {
     Route::get('health', function () {
@@ -36,6 +37,20 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::middleware(['auth:sanctum', 'active'])->group(function () {
+
+            Route::middleware('can:results.view')->group(function () {
+            Route::get('events/{event}/results', [ResultController::class, 'index']);
+            Route::get('events/{event}/results/publications', [ResultController::class, 'publications']);
+        });
+        Route::get('events/{event}/results/export', [ResultController::class, 'export'])->middleware('can:results.export');
+        Route::middleware('can:results.publish')->group(function () {
+            Route::post('events/{event}/results/recalculate', [ResultController::class, 'recalculate']);
+            Route::post('events/{event}/results/publish', [ResultController::class, 'publish']);
+        });
+        Route::post('events/{event}/results/unpublish', [ResultController::class, 'unpublish'])->middleware('can:results.unpublish');
+        Route::get('events/{event}/results/{participant}', [ResultController::class, 'show'])
+            ->scopeBindings()->middleware('can:results.view');
+
             Route::middleware('can:events.manage')->group(function () {
             Route::apiResource('events', EventController::class)->except('destroy');
             Route::patch('events/{event}/status', [EventController::class, 'updateStatus']);
@@ -64,6 +79,7 @@ Route::prefix('v1')->group(function () {
         });
 
             Route::scopeBindings()->group(function () {
+
                 Route::get('events/{event}/participants', [ParticipantController::class, 'index']);
                 Route::post('events/{event}/participants', [ParticipantController::class, 'store']);
                 Route::put('events/{event}/participants/order', [ParticipantController::class, 'reorder']);

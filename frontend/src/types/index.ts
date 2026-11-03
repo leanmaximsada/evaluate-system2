@@ -70,11 +70,57 @@ export interface EventItem {
   starts_at_local: string
   ends_at_local: string
   status: EventStatus
+  evaluation_form_version_id: number | null
+  form?: { id: number; name: string | null; version_id: number; version_number: number } | null
   allowed_transitions: EventStatus[]
   is_closed: boolean
   is_structure_locked: boolean
   participants_count?: number
   judges_count?: number
+  created_by?: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type FormStatus = 'draft' | 'active' | 'inactive'
+
+export interface Criterion {
+  id: number
+  name: string
+  description: string | null
+  min_score: number
+  max_score: number
+  weight: number
+  display_order: number
+  is_required: boolean
+  is_active: boolean
+}
+
+export interface FormVersionSummary {
+  id: number
+  evaluation_form_id: number
+  version_number: number
+  status: 'draft' | 'published'
+  is_weighted: boolean
+  published_at: string | null
+  criteria_count?: number
+}
+
+export interface FormVersion extends FormVersionSummary {
+  criteria: Criterion[]
+  weight_total: number
+  publish_issues?: string[]
+}
+
+export interface EvaluationForm {
+  id: number
+  name: string
+  description: string | null
+  status: FormStatus
+  latest_published_version: number | null
+  has_draft: boolean
+  versions_count: number
+  versions: FormVersionSummary[]
   created_by?: string | null
   created_at: string
   updated_at: string

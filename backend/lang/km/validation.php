@@ -70,5 +70,11 @@ return [
         'max_score' => 'ពិន្ទុអតិបរមា',
         'is_weighted' => 'ការគិតទម្ងន់',
         'form_id' => 'ទម្រង់',
+            'accepted' => ':attribute ត្រូវតែត្រូវបានទទួលយក។',
+            'visibility' => 'ការមើលឃើញ',
+        'confirm' => 'ការបញ្ជាក់',
+        'correction_reason' => 'មូលហេតុនៃការកែតម្រូវ',
+        'reason' => 'មូលហេតុ',
+        'format' => 'ទម្រង់',
     ],
 ];

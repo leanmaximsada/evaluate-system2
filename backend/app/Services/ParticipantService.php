@@ -18,8 +18,7 @@ class ParticipantService
     /** Participants can still be edited or reordered while the event runs. */
     private const EDITABLE = [EventStatus::Draft, EventStatus::Upcoming, EventStatus::InProgress];
 
-    public function __construct(private readonly AuditLogger $audit) {}
-
+    public function __construct(private readonly AuditLogger $audit, private readonly ResultService $results) {}
     /** @param array<string, mixed> $data */
     public function create(Event $event, array $data, User $actor): Participant
     {
@@ -40,6 +39,7 @@ class ParticipantService
     }
 
     /** @param array<string, mixed> $data */
+    /** @param array<string, mixed> $data */
     public function update(Event $event, Participant $participant, array $data, User $actor): Participant
     {
         return DB::transaction(function () use ($event, $participant, $data, $actor) {
@@ -56,6 +56,11 @@ class ParticipantService
 
             if ($changed !== []) {
                 $this->audit->log('participant.updated', $participant, ['event' => $event->code, 'fields' => $changed], $actor);
+            }
+
+            // Withdrawing, disqualifying or re-registering someone changes the ranking.
+            if (in_array('status', $changed, true)) {
+                $this->results->recalculate($event);
             }
 
             return $participant;
@@ -125,5 +130,8 @@ class ParticipantService
     private function lock(Event $event): Event
     {
         return Event::query()->whereKey($event->id)->lockForUpdate()->firstOrFail();
+                    if (in_array('status', $changed, true)) {
+                $this->results->recalculate($event);
+            }
     }
 }

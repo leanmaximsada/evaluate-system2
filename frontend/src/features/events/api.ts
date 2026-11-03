@@ -79,3 +79,11 @@ export async function assignJudge(eventId: number, userId: number): Promise<Judg
 }
 
 export const unassignJudge = (eventId: number, userId: number) => api.delete(`/events/${eventId}/judges/${userId}`)
+
+export async function assignEventForm(eventId: number, formId: number): Promise<EventItem> {
+  return (await api.put<{ data: EventItem }>(`/events/${eventId}/form`, { form_id: formId })).data.data
+} 
+
+export async function clearEventForm(eventId: number): Promise<EventItem> {
+  return (await api.delete<{ data: EventItem }>(`/events/${eventId}/form`)).data.data
+}
