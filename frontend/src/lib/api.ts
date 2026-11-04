@@ -59,3 +59,14 @@ export function applyServerErrors<T extends FieldValues>(
   })
   return applied
 }
+
+/** All server messages for a failed request: every field error for a 422, otherwise one generic message. */
+export function getErrorMessages(error: unknown): string[] {
+  const err = error as AxiosError<ApiErrorBody>
+  const errors = err?.response?.status === 422 ? err.response.data?.errors : undefined
+  if (errors) {
+    const all = Object.values(errors).flat()
+    if (all.length > 0) return all
+  }
+  return [getErrorMessage(error)]
+}

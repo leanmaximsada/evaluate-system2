@@ -41,8 +41,18 @@ export default function DashboardPage() {
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <StatCard label={t('dashboard.participants')} value={data.events.participants} icon={UsersThree} />
                 <StatCard label={t('dashboard.judges_assigned')} value={data.events.judges} icon={Gavel} />
-                <StatCard label={t('dashboard.completion')} value="—" hint={t('dashboard.coming')} icon={CheckCircle} />
-                <StatCard label={t('dashboard.pending')} value="—" hint={t('dashboard.coming')} icon={HourglassMedium} />
+                                <StatCard
+                  label={t('dashboard.completion')}
+                  value={data.events.evaluations.expected > 0 ? `${Math.round((data.events.evaluations.submitted / data.events.evaluations.expected) * 1000) / 10}%` : '—'}
+                  hint={t('dashboard.completion_hint', { done: data.events.evaluations.submitted, total: data.events.evaluations.expected })}
+                  icon={CheckCircle}
+                />
+                <StatCard
+                  label={t('dashboard.pending')}
+                  value={data.events.evaluations.expected > 0 ? data.events.evaluations.expected - data.events.evaluations.submitted : '—'}
+                  hint={t('dashboard.pending_hint')}
+                  icon={HourglassMedium}
+                />
               </div>
             </>
           )}

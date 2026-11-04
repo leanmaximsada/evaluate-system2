@@ -153,7 +153,107 @@ export interface DashboardData {
     by_status: Record<EventStatus, number>
     participants: number
     judges: number
+    evaluations: { expected: number; submitted: number }
     recent: { id: number; name: string; code: string; status: EventStatus; updated_at: string }[]
   } | null
   activity: { id: number; action: string; actor: string | null; created_at: string }[] | null
+}
+
+export type EvaluationState = 'complete' | 'partial' | 'none'
+export type PublicVisibility = 'rank_and_score' | 'rank_only'
+
+export interface ResultRow {
+  participant_id: number
+  number: string
+  name: string
+  team_name: string | null
+  participant_status: ParticipantStatus
+  presentation_order: number
+  aggregate_score: string | null
+  rank: number | null
+  is_tied: boolean
+  judges_assigned: number
+  evaluations_submitted: number
+  is_complete: boolean
+  evaluation_status: EvaluationState
+  calculated_at: string | null
+}
+
+export interface PublicationSummary {
+  status: 'none' | 'published' | 'unpublished'
+  revision: number | null
+  visibility: PublicVisibility | null
+  is_final: boolean
+  published_at: string | null
+  published_by: string | null
+  unpublished_at: string | null
+  needs_republish: boolean
+}
+
+export interface ResultsOverview {
+  event: { id: number; name: string; code: string; status: EventStatus }
+  is_provisional: boolean
+  summary: {
+    participants: number
+    judges_assigned: number
+    evaluations_expected: number
+    evaluations_submitted: number
+    completion_percent: number
+  }
+  publication: PublicationSummary
+  rows: ResultRow[]
+}
+
+export interface Publication {
+  revision: number
+  status: 'published' | 'unpublished'
+  visibility: PublicVisibility | null
+  is_final: boolean
+  published_at: string | null
+  published_by?: string
+  unpublished_at?: string
+  correction_reason?: string
+  rows_count: number
+  rows?: { number: string; name: string; team_name: string | null; rank: number; tied: boolean; score?: string }[]
+}
+
+export interface JudgeScore {
+  criterion_id: number
+  name: string
+  min_score: number
+  max_score: number
+  weight: number
+  score: string | null
+}
+
+export interface JudgeRevision {
+  revision: number
+  changed_by: string | null
+  reason: string | null
+  previous_total: string | null
+  created_at: string
+}
+
+export interface JudgeResult {
+  judge: { id: number; name: string; email: string }
+  status: 'not_started' | 'draft' | 'submitted'
+  submitted_at: string | null
+  total_score: string | null
+  revision: number | null
+  scores: JudgeScore[]
+  revisions: JudgeRevision[]
+}
+
+export interface ParticipantDetail {
+  participant: { id: number; number: string; name: string; team_name: string | null; status: ParticipantStatus }
+  result: {
+    aggregate_score: string | null
+    rank: number | null
+    is_tied: boolean
+    evaluations_submitted: number
+    judges_assigned: number
+    is_complete: boolean
+    calculated_at: string | null
+  } | null
+  judges: JudgeResult[]
 }

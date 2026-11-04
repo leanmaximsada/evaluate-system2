@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use App\Models\Evaluation;
 
 class DashboardController extends Controller
 {
@@ -35,6 +36,7 @@ class DashboardController extends Controller
                 'by_status' => collect(EventStatus::cases())->mapWithKeys(fn (EventStatus $s) => [$s->value => (int) ($counts[$s->value] ?? 0)]),
                 'participants' => Participant::count(),
                 'judges' => DB::table('event_judges')->distinct()->count('user_id'),
+                'evaluations' => $this->evaluationProgress(),
                 'recent' => Event::query()->latest('updated_at')->limit(5)->get(['id', 'name', 'code', 'status', 'updated_at'])
                     ->map(fn (Event $e) => [
                         'id' => $e->id,
@@ -56,5 +58,24 @@ class DashboardController extends Controller
             : null;
 
         return response()->json(['data' => ['users' => $users, 'events' => $events, 'activity' => $activity]]);
+    }
+
+        /** Expected and submitted evaluations across events that are currently in progress. */
+    private function evaluationProgress(): array
+    {
+        $expected = 0;
+        $submitted = 0;
+
+        foreach (Event::where('status', EventStatus::InProgress->value)->withCount('judges')->get() as $event) {
+            $registered = Participant::where('event_id', $event->id)->where('status', 'registered');
+
+            $expected += (clone $registered)->count() * $event->judges_count;
+            $submitted += Evaluation::where('event_id', $event->id)
+                ->where('status', 'submitted')
+                ->whereIn('participant_id', (clone $registered)->select('id'))
+                ->count();
+        }
+
+        return ['expected' => $expected, 'submitted' => $submitted];
     }
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Gear, List, SignOut, SquaresFour, Trophy, UserCircle, Users, X,CalendarBlank,ClipboardText, type Icon } from '@phosphor-icons/react'
+import { Gear, List, SignOut, SquaresFour, Trophy, UserCircle, Users, X,CalendarBlank,ClipboardText,ChartBar, type Icon } from '@phosphor-icons/react'
 import { useAuth } from '@/features/auth/use-auth'
 import { useI18n } from '@/i18n/provider'
 import type { MessageKey } from '@/i18n/messages/en'
@@ -23,6 +23,7 @@ const SECTIONS: { labelKey: MessageKey; items: NavItem[] }[] = [
   items: [
     { href: '/events', labelKey: 'nav.events', icon: CalendarBlank, permission: 'events.manage' },
     { href: '/forms', labelKey: 'nav.forms', icon: ClipboardText, permission: 'forms.manage' },
+          { href: '/results', labelKey: 'nav.results', icon: ChartBar, permission: 'results.view' },
   ],
 },
   {
@@ -47,6 +48,7 @@ const SEGMENTS: Record<string, MessageKey> = {
   forms: 'nav.forms',
   participants: 'events.tab_participants',
   judges: 'events.tab_judges',
+  results: 'nav.results',
 }
 
 function Brand() {

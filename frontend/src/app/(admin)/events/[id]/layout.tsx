@@ -10,8 +10,10 @@ import { getErrorMessage, getStatus } from '@/lib/api'
 import { EventStatusBadge } from '@/components/ui/event-status-badge'
 import { ErrorState } from '@/components/ui/error-state'
 import { InlineSpinner } from '@/components/ui/spinner'
+import { useAuth } from '@/features/auth/use-auth'
 
 export default function EventLayout({ children }: { children: ReactNode }) {
+  const { can } = useAuth()
   const { t } = useI18n()
   const params = useParams<{ id: string }>()
   const id = Number(params.id)
@@ -26,10 +28,11 @@ export default function EventLayout({ children }: { children: ReactNode }) {
   }
 
   const base = `/events/${id}`
-  const tabs = [
-    { href: base, key: 'events.tab_overview' as const },
-    { href: `${base}/participants`, key: 'events.tab_participants' as const },
-    { href: `${base}/judges`, key: 'events.tab_judges' as const },
+    const tabs = [
+    { href: base, key: 'events.tab_overview' as const, exact: true },
+    { href: `${base}/participants`, key: 'events.tab_participants' as const, exact: false },
+    { href: `${base}/judges`, key: 'events.tab_judges' as const, exact: false },
+    ...(can('results.view') ? [{ href: `${base}/results`, key: 'events.tab_results' as const, exact: false }] : []),
   ]
 
   return (
@@ -47,7 +50,7 @@ export default function EventLayout({ children }: { children: ReactNode }) {
 
       <nav aria-label={event.name} className="flex gap-1 border-b border-slate-200">
         {tabs.map((tab) => {
-          const active = pathname === tab.href
+                    const active = tab.exact ? pathname === tab.href : pathname.startsWith(tab.href)
           return (
             <Link
               key={tab.href}
