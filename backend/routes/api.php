@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\V1\EvaluationFormController;
 use App\Http\Controllers\Api\V1\FormCriterionController;
 use App\Http\Controllers\Api\V1\FormVersionController;
 use App\Http\Controllers\Api\V1\ResultController;
+use App\Http\Controllers\Api\V1\PublicResultController;
+use App\Http\Controllers\Api\V1\JudgeController;
 
 Route::prefix('v1')->group(function () {
     Route::get('health', function () {
@@ -23,6 +25,9 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::get('public/settings', [SettingsController::class, 'publicShow'])->middleware('throttle:60,1');
+    Route::get('public/events/{eventCode}/results', [PublicResultController::class, 'show'])
+    ->where('eventCode', '[A-Za-z0-9_-]{2,50}')
+    ->middleware('throttle:public-results');
 
     Route::prefix('auth')->group(function () {
         Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login');
@@ -37,8 +42,15 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::middleware(['auth:sanctum', 'active'])->group(function () {
+        Route::middleware(['judge', 'throttle:judge'])->prefix('judge')->scopeBindings()->group(function () {
+            Route::get('events', [JudgeController::class, 'events']);
+            Route::get('events/{event}', [JudgeController::class, 'show']);
+            Route::get('events/{event}/participants/{participant}', [JudgeController::class, 'participant']);
+            Route::put('events/{event}/participants/{participant}/draft', [JudgeController::class, 'saveDraft']);
+            Route::post('events/{event}/participants/{participant}/submit', [JudgeController::class, 'submit']);
+        });
 
-            Route::middleware('can:results.view')->group(function () {
+        Route::middleware('can:results.view')->group(function () {
             Route::get('events/{event}/results', [ResultController::class, 'index']);
             Route::get('events/{event}/results/publications', [ResultController::class, 'publications']);
         });
@@ -51,13 +63,13 @@ Route::prefix('v1')->group(function () {
         Route::get('events/{event}/results/{participant}', [ResultController::class, 'show'])
             ->scopeBindings()->middleware('can:results.view');
 
-            Route::middleware('can:events.manage')->group(function () {
+        Route::middleware('can:events.manage')->group(function () {
             Route::apiResource('events', EventController::class)->except('destroy');
             Route::patch('events/{event}/status', [EventController::class, 'updateStatus']);
             Route::put('events/{event}/form', [EventController::class, 'assignForm']);
             Route::delete('events/{event}/form', [EventController::class, 'clearForm']);
 
-                    Route::middleware('can:forms.manage')->prefix('evaluation-forms')->group(function () {
+        Route::middleware('can:forms.manage')->prefix('evaluation-forms')->group(function () {
             Route::get('/', [EvaluationFormController::class, 'index']);
             Route::post('/', [EvaluationFormController::class, 'store']);
 

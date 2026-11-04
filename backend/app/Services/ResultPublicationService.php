@@ -9,6 +9,8 @@ use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use App\Events\PublicResultsChanged;
+use App\Support\SafeBroadcast;
 
 /**
  * Publishing freezes a copy of the public ranking. A published snapshot is never edited:
@@ -83,6 +85,8 @@ class ResultPublicationService
                 'incomplete_accepted' => $incomplete,
                 'correction_reason' => $publication->correction_reason,
             ], $actor);
+            
+            SafeBroadcast::afterCommit(new PublicResultsChanged($event->code, 'published', $publication->revision));
 
             return $publication;
         });
@@ -108,6 +112,8 @@ class ResultPublicationService
                 'revision' => $publication->revision,
                 'reason' => $reason,
             ], $actor);
+
+            SafeBroadcast::afterCommit(new PublicResultsChanged($event->code, 'unpublished', $publication->revision));
 
             return $publication;
         });

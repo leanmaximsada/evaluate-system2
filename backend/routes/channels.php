@@ -1,7 +1,7 @@
 <?php
 
+use App\Broadcasting\ResultsChannel;
 use Illuminate\Support\Facades\Broadcast;
 
-Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
-    return (int) $user->id === (int) $id;
-});
+// Admin-only live updates. Public screens use the public-results.{code} channel, which carries no scores.
+Broadcast::channel('events.{eventId}.results', ResultsChannel::class);

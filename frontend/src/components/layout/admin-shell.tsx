@@ -93,12 +93,14 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
-    if (!isLoading && !user) router.replace('/login')
+    if (isLoading) return
+    if (!user) router.replace('/login')
+    else if (user.role === 'judge') router.replace('/judge')
   }, [isLoading, user, router])
 
   useEffect(() => setOpen(false), [pathname])
 
-  if (isLoading || !user) return <FullPageSpinner />
+  if (isLoading || !user || user.role === 'judge') return <FullPageSpinner />
 
   async function handleLogout() {
     await logout()

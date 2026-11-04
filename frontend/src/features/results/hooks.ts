@@ -8,8 +8,8 @@ export const resultKeys = {
   publications: (id: number) => ['results', 'publications', id] as const,
 }
 
-export const useResults = (id: number) =>
-  useQuery({ queryKey: resultKeys.overview(id), queryFn: () => getResults(id), enabled: Number.isFinite(id) })
+export const useResults = (id: number, refetchInterval: number | false = false) =>
+  useQuery({ queryKey: resultKeys.overview(id), queryFn: () => getResults(id), enabled: Number.isFinite(id), refetchInterval })
 
 export const useParticipantResult = (id: number, participantId: number) =>
   useQuery({
@@ -20,3 +20,4 @@ export const useParticipantResult = (id: number, participantId: number) =>
 
 export const usePublications = (id: number) =>
   useQuery({ queryKey: resultKeys.publications(id), queryFn: () => listPublications(id), enabled: Number.isFinite(id) })
+

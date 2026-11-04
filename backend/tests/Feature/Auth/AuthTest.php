@@ -50,12 +50,14 @@ class AuthTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_judge_cannot_log_in_to_admin_system(): void
+        public function test_judge_can_log_in_and_gets_no_admin_permissions(): void
     {
         User::factory()->judge()->create(['email' => 'judge@example.test']);
 
         $this->spa()->postJson(self::LOGIN, ['email' => 'judge@example.test', 'password' => 'password'])
-            ->assertForbidden();
+            ->assertOk()
+            ->assertJsonPath('data.role', 'judge')
+            ->assertJsonPath('data.permissions', []);
     }
 
     public function test_login_is_throttled_after_five_attempts(): void

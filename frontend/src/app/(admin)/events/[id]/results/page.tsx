@@ -20,6 +20,8 @@ import { StatCard } from '@/components/ui/stat-card'
 import { ErrorState } from '@/components/ui/error-state'
 import { InlineSpinner } from '@/components/ui/spinner'
 import { CheckCircle, Gavel, UsersThree } from '@phosphor-icons/react'
+import { LiveIndicator } from '@/features/live/live-indicator'
+import { useRealtimeSignal, type ConnectionState } from '@/features/live/use-realtime'
 
 const stateTone: Record<EvaluationState, string> = {
   complete: 'bg-green-50 text-green-700 ring-green-200',
@@ -40,9 +42,13 @@ export default function EventResultsPage() {
   const params = useParams<{ id: string }>()
   const id = Number(params.id)
   const queryClient = useQueryClient()
+  const [conn, setConn] = useState<ConnectionState>('connecting')
 
-  const { data, isLoading, isError, error, refetch } = useResults(id)
+  const { data, isLoading, isError, error, refetch } = useResults(id, conn === 'connected' ? false : 30_000)
   const history = usePublications(id)
+  useRealtimeSignal(`events.${id}.results`, 'results.updated', true, () => {
+    queryClient.invalidateQueries({ queryKey: resultKeys.all })
+  }, setConn)
 
   const [dialog, setDialog] = useState<'publish' | 'unpublish' | null>(null)
   const [dialogErrors, setDialogErrors] = useState<string[] | null>(null)
@@ -98,6 +104,14 @@ export default function EventResultsPage() {
 
   return (
     <div className="space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+        <LiveIndicator state={conn} />
+        {isPublished && (
+          <Link href={`/live/${data.event.code}`} target="_blank" className="text-sm font-medium text-slate-900 underline">
+            {t('results.open_public')}
+          </Link>
+        )}
+      </div>
       {feedback && <Alert kind={feedback.kind}>{feedback.text}</Alert>}
       {data.is_provisional && <Alert kind="info">{t('results.provisional')}</Alert>}
       {pub.needs_republish && <Alert kind="error">{t('results.needs_republish')}</Alert>}

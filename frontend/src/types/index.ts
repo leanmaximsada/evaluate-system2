@@ -257,3 +257,49 @@ export interface ParticipantDetail {
   } | null
   judges: JudgeResult[]
 }
+
+export type JudgeEvaluationStatus = 'not_started' | 'draft' | 'submitted'
+
+export interface JudgeEventSummary {
+  id: number
+  name: string
+  code: string
+  venue: string | null
+  starts_at_local: string | null
+  participants_total: number
+  submitted: number
+  drafts: number
+}
+
+export interface JudgeParticipantItem {
+  id: number
+  number: string
+  name: string
+  team_name: string | null
+  presentation_order: number
+  evaluation_status: JudgeEvaluationStatus
+  total_score: string | null
+}
+
+export interface JudgeEventDetail {
+  event: { id: number; name: string; code: string; description: string | null; venue: string | null }
+  is_weighted: boolean
+  criteria: Criterion[]
+  participants: JudgeParticipantItem[]
+}
+
+export interface JudgeEvaluation {
+  status: JudgeEvaluationStatus
+  scores: Record<string, string>
+  total_score: string | null
+  submitted_at: string | null
+  revision: number | null
+}
+
+export interface JudgeParticipantDetail {
+  event: { id: number; name: string; code: string }
+  participant: { id: number; number: string; name: string; team_name: string | null; description: string | null }
+  is_weighted: boolean
+  criteria: Criterion[]
+  evaluation: JudgeEvaluation
+}

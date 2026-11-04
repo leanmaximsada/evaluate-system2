@@ -10,6 +10,8 @@ use App\Models\ParticipantResult;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Events\ResultsUpdated;
+use App\Support\SafeBroadcast;
 
 class ResultService
 {
@@ -107,6 +109,7 @@ class ResultService
 
                 $rows->push($row);
             }
+                SafeBroadcast::afterCommit(new ResultsUpdated($event->id, Carbon::now()->toIso8601String()));
 
             return $rows;
             

@@ -57,5 +57,7 @@
     "There are no ranked participants to publish.": "គ្មានអ្នកចូលរួមដែលមានចំណាត់ថ្នាក់សម្រាប់ផ្សព្វផ្សាយទេ។",
     ":count participants have incomplete evaluations. Review them, or confirm to publish anyway.": ":count នាក់មានការវាយតម្លៃមិនទាន់គ្រប់គ្រាន់។ សូមពិនិត្យពួកគេ ឬបញ្ជាក់ដើម្បីផ្សព្វផ្សាយយ៉ាងណាក៏ដោយ។",
     "A correction reason is required when republishing.": "ត្រូវមានមូលហេតុនៃការកែតម្រូវ នៅពេលផ្សព្វផ្សាយឡើងវិញ។",
-    "These results are not currently published.": "លទ្ធផលទាំងនេះមិនត្រូវបានផ្សព្វផ្សាយនៅពេលនេះទេ។"
+    "These results are not currently published.": "លទ្ធផលទាំងនេះមិនត្រូវបានផ្សព្វផ្សាយនៅពេលនេះទេ។",
+        "Results are not published.": "លទ្ធផលមិនទាន់ត្រូវបានផ្សព្វផ្សាយទេ។",
+            "This area is for judges only.": "ផ្នែកនេះសម្រាប់តែអ្នកវិនិច្ឆ័យប៉ុណ្ណោះ។"
 }

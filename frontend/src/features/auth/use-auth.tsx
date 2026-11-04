@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useMemo, type ReactNode } from 
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { User } from '@/types'
 import { fetchMe, loginRequest, logoutRequest } from './api'
+import { usePathname } from 'next/navigation'
 
 interface AuthContextValue {
   user: User | null
@@ -18,10 +19,14 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient()
 
+  const pathname = usePathname()
+  const isPublicScreen = pathname.startsWith('/live')
+
   const { data: user, isLoading } = useQuery({
     queryKey: ['me'],
     queryFn: fetchMe,
     staleTime: 60_000,
+    enabled: !isPublicScreen,
   })
 
   const login = useCallback(

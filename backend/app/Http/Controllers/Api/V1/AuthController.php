@@ -31,7 +31,7 @@ public function login(LoginRequest $request): JsonResponse
     /** @var User $user */
     $user = Auth::guard('web')->user();
 
-    if (! $user->is_active || ! $user->isAdmin()) {
+     if (! $user->is_active) {
         $reason = ! $user->is_active ? 'inactive' : 'not_admin';
 
         Auth::guard('web')->logout();

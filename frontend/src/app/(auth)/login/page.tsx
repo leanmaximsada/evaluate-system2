@@ -35,18 +35,18 @@ export default function LoginPage() {
   } = useForm<FormValues>({ resolver: zodResolver(schema) })
 
   useEffect(() => {
-    if (!isLoading && user) router.replace('/dashboard')
+    if (!isLoading && user) router.replace(user.role === 'judge' ? '/judge' : '/dashboard')
   }, [isLoading, user, router])
 
-  async function onSubmit(values: FormValues) {
-    setFormError(null)
-    try {
-      await login(values)
-      router.replace('/dashboard')
-    } catch (error) {
-      if (!applyServerErrors(error, setError)) setFormError(getErrorMessage(error))
-    }
+ async function onSubmit(values: FormValues) {
+  setFormError(null)
+  try {
+    const signedIn = await login(values)
+    router.replace(signedIn?.role === 'judge' ? '/judge' : '/dashboard')
+  } catch (error) {
+    if (!applyServerErrors(error, setError)) setFormError(getErrorMessage(error))
   }
+}
 
   return (
     <Card title={t('auth.sign_in')} description={t('auth.subtitle')}>
@@ -59,6 +59,6 @@ export default function LoginPage() {
           <Link href="/forgot-password" className="text-indigo-600 hover:underline">{t('auth.forgot_link')}</Link>
         </p>
       </form>
-    </Card>
+    </Card> 
   )
 }
