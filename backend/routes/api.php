@@ -16,6 +16,8 @@ use App\Http\Controllers\Api\V1\FormVersionController;
 use App\Http\Controllers\Api\V1\ResultController;
 use App\Http\Controllers\Api\V1\PublicResultController;
 use App\Http\Controllers\Api\V1\JudgeController;
+use App\Http\Controllers\Api\V1\SponsorController;
+use App\Http\Controllers\Api\V1\EventDisplayController;
 
 Route::prefix('v1')->group(function () {
     Route::get('health', function () {
@@ -26,8 +28,8 @@ Route::prefix('v1')->group(function () {
 
     Route::get('public/settings', [SettingsController::class, 'publicShow'])->middleware('throttle:60,1');
     Route::get('public/events/{eventCode}/results', [PublicResultController::class, 'show'])
-    ->where('eventCode', '[A-Za-z0-9_-]{2,50}')
-    ->middleware('throttle:public-results');
+        ->where('eventCode', '[A-Za-z0-9_-]{2,50}')
+        ->middleware('throttle:public-results');
 
     Route::prefix('auth')->group(function () {
         Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login');
@@ -51,6 +53,7 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::middleware('can:results.view')->group(function () {
+            Route::get('events/{event}/results/preview', [EventDisplayController::class, 'preview']);
             Route::get('events/{event}/results', [ResultController::class, 'index']);
             Route::get('events/{event}/results/publications', [ResultController::class, 'publications']);
         });
@@ -64,33 +67,46 @@ Route::prefix('v1')->group(function () {
             ->scopeBindings()->middleware('can:results.view');
 
         Route::middleware('can:events.manage')->group(function () {
+            Route::patch('events/{event}/display', [EventDisplayController::class, 'update']);
+            Route::post('events/{event}/display/logo', [EventDisplayController::class, 'uploadLogo']);
+            Route::delete('events/{event}/display/logo', [EventDisplayController::class, 'removeLogo']);
             Route::apiResource('events', EventController::class)->except('destroy');
             Route::patch('events/{event}/status', [EventController::class, 'updateStatus']);
             Route::put('events/{event}/form', [EventController::class, 'assignForm']);
             Route::delete('events/{event}/form', [EventController::class, 'clearForm']);
+            Route::get('events/{event}/sponsors', [SponsorController::class, 'index']);
+            Route::post('events/{event}/sponsors', [SponsorController::class, 'store']);
+            Route::put('events/{event}/sponsors/order', [SponsorController::class, 'reorder']);
+            Route::post('events/{event}/sponsors/{sponsor}', [SponsorController::class, 'update']);
+            Route::delete('events/{event}/sponsors/{sponsor}', [SponsorController::class, 'destroy']);
 
-        Route::middleware('can:forms.manage')->prefix('evaluation-forms')->group(function () {
-            Route::get('/', [EvaluationFormController::class, 'index']);
-            Route::post('/', [EvaluationFormController::class, 'store']);
+            Route::middleware('can:forms.manage')->prefix('evaluation-forms')->group(function () {
+                Route::get('/', [EvaluationFormController::class, 'index']);
+                Route::post('/', [EvaluationFormController::class, 'store']);
 
-            Route::scopeBindings()->group(function () {
-                Route::get('{form}', [EvaluationFormController::class, 'show']);
-                Route::put('{form}', [EvaluationFormController::class, 'update']);
-                Route::patch('{form}/status', [EvaluationFormController::class, 'updateStatus']);
+                Route::scopeBindings()->group(function () {
+                    Route::get('{form}', [EvaluationFormController::class, 'show']);
+                    Route::put('{form}', [EvaluationFormController::class, 'update']);
+                    Route::patch('{form}/status', [EvaluationFormController::class, 'updateStatus']);
 
-                Route::post('{form}/versions', [FormVersionController::class, 'store']);
-                Route::get('{form}/versions/{version}', [FormVersionController::class, 'show']);
-                Route::put('{form}/versions/{version}', [FormVersionController::class, 'update']);
-                Route::post('{form}/versions/{version}/publish', [FormVersionController::class, 'publish']);
+                    Route::post('{form}/versions', [FormVersionController::class, 'store']);
+                    Route::get('{form}/versions/{version}', [FormVersionController::class, 'show']);
+                    Route::put('{form}/versions/{version}', [FormVersionController::class, 'update']);
+                    Route::post('{form}/versions/{version}/publish', [FormVersionController::class, 'publish']);
 
-                Route::post('{form}/versions/{version}/criteria', [FormCriterionController::class, 'store']);
-                Route::put('{form}/versions/{version}/criteria/order', [FormCriterionController::class, 'reorder']);
-                Route::put('{form}/versions/{version}/criteria/{criterion}', [FormCriterionController::class, 'update']);
-                Route::delete('{form}/versions/{version}/criteria/{criterion}', [FormCriterionController::class, 'destroy']);
+                    Route::post('{form}/versions/{version}/criteria', [FormCriterionController::class, 'store']);
+                    Route::put('{form}/versions/{version}/criteria/order', [FormCriterionController::class, 'reorder']);
+                    Route::put('{form}/versions/{version}/criteria/{criterion}', [FormCriterionController::class, 'update']);
+                    Route::delete('{form}/versions/{version}/criteria/{criterion}', [FormCriterionController::class, 'destroy']);
+                });
             });
-        });
 
             Route::scopeBindings()->group(function () {
+                Route::get('events/{event}/sponsors', [SponsorController::class, 'index']);
+                Route::post('events/{event}/sponsors', [SponsorController::class, 'store']);
+                Route::put('events/{event}/sponsors/order', [SponsorController::class, 'reorder']);
+                Route::post('events/{event}/sponsors/{sponsor}', [SponsorController::class, 'update']);
+                Route::delete('events/{event}/sponsors/{sponsor}', [SponsorController::class, 'destroy']);
 
                 Route::get('events/{event}/participants', [ParticipantController::class, 'index']);
                 Route::post('events/{event}/participants', [ParticipantController::class, 'store']);
@@ -116,5 +132,5 @@ Route::prefix('v1')->group(function () {
         Route::put('settings', [SettingsController::class, 'update']);
     });
 
-    
+
 });

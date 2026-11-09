@@ -32,6 +32,8 @@ class DashboardController extends Controller
             $counts = Event::query()->selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status');
 
             $events = [
+                'awaiting_review' => Event::where('status', EventStatus::Completed->value)
+                    ->whereDoesntHave('publications', fn ($q) => $q->where('status', 'published'))->count(),
                 'total' => (int) $counts->sum(),
                 'by_status' => collect(EventStatus::cases())->mapWithKeys(fn (EventStatus $s) => [$s->value => (int) ($counts[$s->value] ?? 0)]),
                 'participants' => Participant::count(),

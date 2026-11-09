@@ -6,6 +6,7 @@ use App\Enums\EventStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
 
 class Event extends Model
 {
@@ -59,5 +60,31 @@ class Event extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function sponsors()
+    {
+        return $this->hasMany(EventSponsor::class);
+    }
+    public function organizationLogoUrl(): ?string
+    {
+        if (! $this->organization_logo_path) {
+            return null;
+        }
+
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk('public');
+
+        return $disk->url($this->organization_logo_path);
+    }
+
+    /** @return array{name: ?string, logo_url: ?string}|null Public fields only. */
+    public function publicOrganization(): ?array
+    {
+        if (! $this->organization_name && ! $this->organization_logo_path) {
+            return null;
+        }
+
+        return ['name' => $this->organization_name, 'logo_url' => $this->organizationLogoUrl()];
     }
 }

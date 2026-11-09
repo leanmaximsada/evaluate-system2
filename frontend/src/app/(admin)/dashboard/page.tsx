@@ -69,6 +69,12 @@ export default function DashboardPage() {
           <div className="grid gap-6 lg:grid-cols-2">
             {data.events && (
               <Card title={t('dashboard.recent_events')} description={t('dashboard.recent_events_sub')}>
+                              {data.events.awaiting_review > 0 && (
+                <Link href="/display-review" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900 hover:bg-amber-100">
+                  <span>{t('dashboard.awaiting_review', { n: data.events.awaiting_review })}</span>
+                  <span className="font-medium underline">{t('dashboard.awaiting_link')}</span>
+                </Link>
+              )}
                 {data.events.recent.length === 0 ? (
                   <p className="py-6 text-center text-sm text-slate-500">{t('dashboard.no_events')}</p>
                 ) : (

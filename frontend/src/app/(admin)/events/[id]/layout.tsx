@@ -29,6 +29,7 @@ export default function EventLayout({ children }: { children: ReactNode }) {
 
   const base = `/events/${id}`
     const tabs = [
+    { href: `${base}/display`, key: 'events.tab_display' as const, exact: false },
     { href: base, key: 'events.tab_overview' as const, exact: true },
     { href: `${base}/participants`, key: 'events.tab_participants' as const, exact: false },
     { href: `${base}/judges`, key: 'events.tab_judges' as const, exact: false },

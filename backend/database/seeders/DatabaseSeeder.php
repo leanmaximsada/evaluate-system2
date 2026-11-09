@@ -2,24 +2,18 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
-     * Seed the application's database.
+     * Nothing is created automatically, so this is safe to run anywhere.
+     *
+     *   First Super Admin:  php artisan app:create-super-admin
+     *   Demo data:          php artisan demo:seed
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $this->command?->info('No data created. Create the first Super Admin with: php artisan app:create-super-admin');
     }
 }

@@ -1,9 +1,10 @@
-'use client'
-
-import { useParams } from 'next/navigation'
-import { LiveResults } from '@/features/live/live-results'
+import { Suspense } from 'react'
+import { LivePageClient } from './live-page-client'
 
 export default function LiveResultsPage() {
-  const params = useParams<{ code: string }>()
-  return <LiveResults code={decodeURIComponent(params.code)} />
+  return (
+    <Suspense fallback={null}>
+      <LivePageClient />
+    </Suspense>
+  )
 }

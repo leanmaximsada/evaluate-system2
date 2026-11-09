@@ -64,6 +64,7 @@ export interface EventItem {
   description: string | null
   venue: string | null
   category: string | null
+  public_subtitle: string | null
   timezone: string
   starts_at: string
   ends_at: string
@@ -80,6 +81,10 @@ export interface EventItem {
   created_by?: string | null
   created_at: string
   updated_at: string
+  organization_name: string | null
+  organization_logo_url: string | null
+  display_visibility: PublicVisibility
+  is_published?: boolean
 }
 
 export type FormStatus = 'draft' | 'active' | 'inactive'
@@ -149,6 +154,7 @@ export interface Judge {
 export interface DashboardData {
   users: { total: number; active: number; admins: number; judges: number } | null
   events: {
+    awaiting_review: number
     total: number
     by_status: Record<EventStatus, number>
     participants: number
@@ -302,4 +308,32 @@ export interface JudgeParticipantDetail {
   is_weighted: boolean
   criteria: Criterion[]
   evaluation: JudgeEvaluation
+}
+
+export type SponsorTier = 'diamond' | 'gold' | 'silver' | 'supporter'
+
+export interface Sponsor {
+  id: number
+  name: string
+  tier: SponsorTier
+  logo_url: string
+  display_order: number
+}
+
+export interface PublicSponsor {
+  tier: SponsorTier
+  name: string
+  logo_url: string
+}
+
+export interface DisplayChecks {
+  event_completed: boolean
+  ranked_participants: number
+  incomplete_evaluations: number
+  sponsors_count: number
+  has_organization: boolean
+  has_organization_logo: boolean
+  has_subtitle: boolean
+  is_published: boolean
+  has_previous_publication: boolean
 }

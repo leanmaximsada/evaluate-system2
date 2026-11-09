@@ -59,5 +59,7 @@
     "A correction reason is required when republishing.": "ត្រូវមានមូលហេតុនៃការកែតម្រូវ នៅពេលផ្សព្វផ្សាយឡើងវិញ។",
     "These results are not currently published.": "លទ្ធផលទាំងនេះមិនត្រូវបានផ្សព្វផ្សាយនៅពេលនេះទេ។",
         "Results are not published.": "លទ្ធផលមិនទាន់ត្រូវបានផ្សព្វផ្សាយទេ។",
-            "This area is for judges only.": "ផ្នែកនេះសម្រាប់តែអ្នកវិនិច្ឆ័យប៉ុណ្ណោះ។"
+        "This area is for judges only.": "ផ្នែកនេះសម្រាប់តែអ្នកវិនិច្ឆ័យប៉ុណ្ណោះ។",
+        "An event can have at most 40 sponsors.": "កម្មវិធីមួយអាចមានអ្នកឧបត្ថម្ភបានយ៉ាងច្រើន 40 ប៉ុណ្ណោះ។",
+    "The order must list every sponsor exactly once.": "លំដាប់ត្រូវមានអ្នកឧបត្ថម្ភទាំងអស់ម្ដងគត់។"
 }

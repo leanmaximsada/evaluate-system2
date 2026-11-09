@@ -11,6 +11,7 @@ import { Alert } from '@/components/ui/alert'
 import type { PublishPayload } from './api'
 
 interface Props {
+  defaultVisibility?: PublicVisibility
   open: boolean
   /** True when results were published before, so a correction reason is required. */
   hasPrevious: boolean
@@ -19,11 +20,12 @@ interface Props {
   errors?: string[] | null
   onSubmit: (payload: PublishPayload) => void
   onClose: () => void
+  
 }
 
-export function PublishDialog({ open, hasPrevious, incompleteCount, loading = false, errors, onSubmit, onClose }: Props) {
+export function PublishDialog({ open, hasPrevious, incompleteCount, loading = false, errors, onSubmit, onClose, defaultVisibility }: Props) {
   const { t, tx } = useI18n()
-  const [visibility, setVisibility] = useState<PublicVisibility>('rank_and_score')
+  const [visibility, setVisibility] = useState<PublicVisibility>(defaultVisibility ?? 'rank_and_score')
   const [reason, setReason] = useState('')
   const [accept, setAccept] = useState(false)
   const [confirm, setConfirm] = useState(false)

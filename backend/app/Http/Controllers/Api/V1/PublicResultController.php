@@ -8,10 +8,11 @@ use App\Models\ResultPublication;
 use App\Services\ResultService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
+use App\Services\SponsorService;
 
 class PublicResultController extends Controller
 {
-    public function __construct(private readonly ResultService $results) {}
+        public function __construct(private readonly ResultService $results, private readonly SponsorService $sponsors) {}
 
     public function show(string $eventCode): JsonResponse
     {
@@ -27,7 +28,7 @@ class PublicResultController extends Controller
         $policy = $this->results->policyFor($event);
 
         return response()->json(['data' => [
-            'event' => ['name' => $event->name, 'code' => $event->code, 'status' => $event->status->value],
+            'event' => ['name' => $event->name, 'code' => $event->code, 'status' => $event->status->value, 'subtitle' => $event->public_subtitle],
             'is_final' => (bool) ($meta['is_final'] ?? false),
             'visibility' => $meta['visibility'] ?? 'rank_and_score',
             'show_tie_indicator' => (bool) ($policy['show_tie_indicator'] ?? true),
@@ -35,6 +36,9 @@ class PublicResultController extends Controller
             'published_at' => $publication->published_at?->toIso8601String(),
             // The frozen snapshot: number, name, team, rank, tie flag and (if allowed) score. Nothing else.
             'rows' => $publication->snapshot['rows'] ?? [],
+            // Name, level and logo only. Nothing else about a sponsor is public.
+            'organization' => $event->publicOrganization(),
+            'sponsors' => $this->sponsors->publicList($event),
         ]])->header('Cache-Control', 'no-store');
     }
 }

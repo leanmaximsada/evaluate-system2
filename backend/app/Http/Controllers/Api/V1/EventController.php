@@ -24,6 +24,7 @@ class EventController extends Controller
     {
         $query = Event::query()
             ->withCount(['participants', 'judges'])
+            ->withExists(['publications as is_published' => fn (Builder $q) => $q->where('status', 'published')])
             ->when($request->validated('search'), function (Builder $q, string $term) {
                 $like = '%'.addcslashes($term, '\\%_').'%';
                 $q->where(fn (Builder $q) => $q->where('name', 'ilike', $like)->orWhere('code', 'ilike', $like));
