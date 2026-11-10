@@ -25,6 +25,7 @@ import { FullPageSpinner } from "@/components/ui/spinner";
 import { RoleBadge } from "@/components/ui/role-badge";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import {ThemeToggle} from '@/theme/theme-toggle'
 
 interface NavItem {
   href: string;
@@ -271,6 +272,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </div>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
+            <ThemeToggle />
             <RoleBadge role={user.role} />
             <Button variant="secondary" onClick={handleLogout}>
               <SignOut className="h-4 w-4" aria-hidden="true" />

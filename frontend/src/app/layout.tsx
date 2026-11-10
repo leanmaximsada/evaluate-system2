@@ -5,6 +5,8 @@ import { Providers } from '@/components/providers'
 import { LOCALE_COOKIE, isLocale } from '@/i18n/core'
 import './globals.css'
 import { getInitialLocale } from '@/i18n/server'
+import { themeInitScript } from '@/theme/theme-provider'
+import { ThemeProvider } from '@/theme/theme-provider'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' })
 const khmer = Noto_Sans_Khmer({ subsets: ['khmer'], variable: '--font-khmer', display: 'swap' })
@@ -18,10 +20,15 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const locale = await getInitialLocale()
 
   return (
-    <html lang={locale} className={`${inter.variable} ${khmer.variable}`}>
+    <ThemeProvider>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body>
         <Providers initialLocale={locale}>{children}</Providers>
       </body>
     </html>
+    </ThemeProvider>
   )
 }

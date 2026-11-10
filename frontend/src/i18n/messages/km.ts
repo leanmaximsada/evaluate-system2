@@ -637,4 +637,6 @@ export const km: Record<MessageKey, string> = {
   'display.settings_saved': 'បានរក្សាទុកការកំណត់ការបង្ហាញ។',
   'display.err_name_long': 'ប្រើមិនលើស 150 តួអក្សរ',
   'display.err_subtitle_long': 'ប្រើមិនលើស 500 តួអក្សរ',
+    'theme.to_dark': 'ប្ដូរទៅរបៀបងងឹត',
+  'theme.to_light': 'ប្ដូរទៅរបៀបភ្លឺ',
 }

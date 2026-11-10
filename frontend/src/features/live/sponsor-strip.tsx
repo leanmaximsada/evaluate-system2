@@ -35,7 +35,7 @@ export function SponsorStrip({ sponsors }: { sponsors: PublicSponsor[] }) {
       {groups.map(({ tier, items }) => (
         <div key={tier} className="min-w-0">
           <p className="mb-1 text-center text-[clamp(0.7rem,1.1vw,1rem)] font-medium text-white/80">{t(`sponsor.tier_${tier}`)}</p>
-          <ul className="flex flex-wrap items-center justify-center gap-4 rounded-xl bg-white px-4 py-3 shadow-lg">
+          <ul className="flex flex-wrap items-center justify-center gap-4 rounded-l bg-white px-4 py-3 shadow-lg">
             {items.map((s) => <li key={`${s.name}-${s.logo_url}`}><Logo sponsor={s} /></li>)}
           </ul>
         </div>

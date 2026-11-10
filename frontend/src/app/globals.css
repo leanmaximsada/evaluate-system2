@@ -29,3 +29,66 @@ html[lang='km'] body {
   font-family: var(--font-khmer), "Khmer OS", ui-sans-serif, system-ui, sans-serif;
   line-height: 1.7;
 }
+
+/* Lets `dark:` utilities work too, if you ever want one. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  Dark mode swaps the slate scale and white. Every existing class such as bg-white,
+  text-slate-900 or border-slate-200 then flips without being edited.
+*/
+.dark {
+  color-scheme: dark;
+
+  --color-white: #111827;
+  --color-slate-50: #0b1120;
+  --color-slate-100: #1e293b;
+  --color-slate-200: #334155;
+  --color-slate-300: #475569;
+  --color-slate-400: #64748b;
+  --color-slate-500: #94a3b8;
+  --color-slate-600: #cbd5e1;
+  --color-slate-700: #e2e8f0;
+  --color-slate-800: #f1f5f9;
+  --color-slate-900: #f8fafc;
+  --color-slate-950: #ffffff;
+
+  /* Status badges and notices */
+  --color-green-50: #052e16;
+  --color-green-200: #166534;
+  --color-green-700: #86efac;
+  --color-amber-50: #451a03;
+  --color-amber-700: #fcd34d;
+  --color-amber-800: #fde68a;
+  --color-amber-900: #fef3c7;
+  --color-red-50: #450a0a;
+  --color-red-200: #7f1d1d;
+  --color-red-600: #f87171;
+  --color-red-700: #fca5a5;
+}
+
+.dark body {
+  background-color: var(--color-slate-50);
+  color: var(--color-slate-900);
+}
+
+/*
+  The public results screen is a fixed projector design. Putting `theme-light` on it
+  restores the light values inside it, even when the rest of the app is dark.
+*/
+.theme-light {
+  color-scheme: light;
+
+  --color-white: #ffffff;
+  --color-slate-50: oklch(98.4% 0.003 247.858);
+  --color-slate-100: oklch(96.8% 0.007 247.896);
+  --color-slate-200: oklch(92.9% 0.013 255.508);
+  --color-slate-300: oklch(86.9% 0.022 252.894);
+  --color-slate-400: oklch(70.4% 0.04 256.788);
+  --color-slate-500: oklch(55.4% 0.046 257.417);
+  --color-slate-600: oklch(44.6% 0.043 257.281);
+  --color-slate-700: oklch(37.2% 0.044 257.287);
+  --color-slate-800: oklch(27.9% 0.041 260.031);
+  --color-slate-900: oklch(20.8% 0.042 265.755);
+  --color-slate-950: oklch(12.9% 0.042 264.695);
+}

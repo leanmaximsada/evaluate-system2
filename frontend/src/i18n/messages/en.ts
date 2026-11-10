@@ -695,6 +695,8 @@ export const en = {
   "display.settings_saved": "Display settings saved.",
   "display.err_name_long": "Use at most 150 characters",
   "display.err_subtitle_long": "Use at most 500 characters",
+    'theme.to_dark': 'Switch to dark mode',
+  'theme.to_light': 'Switch to light mode',
 } as const;
 
 export type MessageKey = keyof typeof en;

@@ -73,7 +73,7 @@ export function LiveResults({ code, preview }: { code: string; preview?: { event
   const organization = data?.organization
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900 px-6 py-8 text-white sm:px-10 lg:px-16">
+    <main className="theme-light min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900 px-6 py-8 text-white sm:px-10 lg:px-16">
       {preview && (
         <div role="status" className="mb-6 rounded-lg bg-amber-300 px-4 py-2 text-center text-sm font-semibold text-slate-950">
           {t('live.preview_banner')}
@@ -98,10 +98,10 @@ export function LiveResults({ code, preview }: { code: string; preview?: { event
               {organization.name && <span className="text-[clamp(1rem,2vw,1.75rem)] font-semibold text-white/90">{organization.name}</span>}
             </div>
           )}
-          <div className="flex items-center gap-2 text-amber-300">
+          {/* <div className="flex items-center gap-2 text-amber-300">
             <Trophy weight="fill" className="h-5 w-5" aria-hidden="true" />
             <span className="text-sm font-semibold uppercase tracking-widest">{t('live.leaderboard')}</span>
-          </div>
+          </div> */}
           {data && !unpublished && (
             <>
               <h1 className="mt-2 text-[clamp(2rem,5vw,4.5rem)] font-semibold leading-tight tracking-tight">{data.event.name}</h1>
@@ -110,20 +110,20 @@ export function LiveResults({ code, preview }: { code: string; preview?: { event
                   {subtitleLines.map((line) => <p key={line}>{line}</p>)}
                 </div>
               )}
-              <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
+              {/* <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
                 <span className="rounded-full bg-amber-300 px-3 py-1 font-semibold text-slate-950">
                   {data.is_final ? t('live.final') : t('live.provisional')}
                 </span>
                 <span className="rounded-full bg-white/15 px-3 py-1 text-white">{t(`event.status_${data.event.status}`)}</span>
                 {data.published_at && <span className="text-white/60">{t('live.updated', { date: formatDateTime(data.published_at) })}</span>}
                 <span className="text-white/40">{t('live.checked', { time: formatDateTime(new Date(query.dataUpdatedAt)) })}</span>
-              </div>
+              </div> */}
             </>
           )}
         </div>
         {!preview && (
           <div className="flex items-center gap-3">
-            <LiveIndicator state={connection} dark />
+            {/* <LiveIndicator state={connection} dark /> */}
             <LanguageSwitcher />
             <button
               type="button"

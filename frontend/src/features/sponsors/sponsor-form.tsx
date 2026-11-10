@@ -113,7 +113,7 @@ export function SponsorForm({ initial, onSubmit, onCancel }: Props) {
         <p className="text-xs text-slate-500">{t('sponsors.logo_hint')}{initial ? ` ${t('sponsors.logo_keep')}` : ''}</p>
         {logoError && <p role="alert" className="text-sm text-red-600">{tx(logoError)}</p>}
         {(preview ?? initial?.logo_url) && (
-          <div className="mt-2 inline-flex rounded-lg border border-slate-200 bg-white p-3">
+          <div className="mt-2 inline-flex rounded-lg border border-slate-200 bg-[#ffffff] p-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={preview ?? initial?.logo_url} alt={t('sponsors.logo')} className="max-h-16 max-w-48 object-contain" />
           </div>

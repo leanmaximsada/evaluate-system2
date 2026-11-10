@@ -108,7 +108,7 @@ export function DisplaySettingsForm({ event, onSave, onUploadLogo, onRemoveLogo 
         {errors.logo && <p role="alert" className="text-sm text-red-600">{tx(errors.logo)}</p>}
         {event.organization_logo_url && (
           <div className="mt-2 flex items-center gap-3">
-            <div className="inline-flex rounded-lg border border-slate-200 bg-white p-3">
+            <div className="inline-flex rounded-lg border border-slate-200 bg-[#ffffff] p-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={event.organization_logo_url} alt={t('display.org_logo')} className="max-h-16 max-w-48 object-contain" />
             </div>

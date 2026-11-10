@@ -9,6 +9,7 @@ import { useI18n } from '@/i18n/provider'
 import { FullPageSpinner } from '@/components/ui/spinner'
 import { Button } from '@/components/ui/button'
 import { LanguageSwitcher } from '@/components/ui/language-switcher'
+import { ThemeToggle } from '@/theme/theme-toggle'
 
 export function JudgeShell({ children }: { children: ReactNode }) {
   const { user, isLoading, logout } = useAuth()
@@ -40,6 +41,7 @@ export function JudgeShell({ children }: { children: ReactNode }) {
           </Link>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
+            <ThemeToggle />
             <Button variant="secondary" onClick={handleLogout}>
               <SignOut className="h-4 w-4" aria-hidden="true" />
               <span className="hidden sm:inline">{t('shell.sign_out')}</span>

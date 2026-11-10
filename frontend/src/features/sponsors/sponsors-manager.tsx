@@ -85,7 +85,7 @@ export function SponsorsManager({ eventId, onChanged }: { eventId: number; onCha
                   <ul className="divide-y divide-slate-100 rounded-lg border border-slate-200">
                     {items.map((s, i) => (
                       <li key={s.id} className="flex items-center gap-4 p-3">
-                        <div className="flex h-14 w-28 shrink-0 items-center justify-center rounded-md border border-slate-100 bg-white p-1">
+                        <div className="flex h-14 w-28 shrink-0 items-center justify-center rounded-md border border-slate-100 bg-[#ffffff] p-1">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={s.logo_url} alt={s.name} className="max-h-full max-w-full object-contain" />
                         </div>
