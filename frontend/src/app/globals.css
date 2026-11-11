@@ -40,36 +40,68 @@ html[lang='km'] body {
 .dark {
   color-scheme: dark;
 
-  --color-white: #111827;
-  --color-slate-50: #0b1120;
-  --color-slate-100: #1e293b;
-  --color-slate-200: #334155;
-  --color-slate-300: #475569;
-  --color-slate-400: #64748b;
-  --color-slate-500: #94a3b8;
-  --color-slate-600: #cbd5e1;
-  --color-slate-700: #e2e8f0;
-  --color-slate-800: #f1f5f9;
-  --color-slate-900: #f8fafc;
-  --color-slate-950: #ffffff;
+  /* Surfaces: page, cards, hover and badge backgrounds */
+  --color-white: #1c1c1c;
+  --color-slate-50: #171717;
+  --color-slate-100: #262626;
 
-  /* Status badges and notices */
-  --color-green-50: #052e16;
-  --color-green-200: #166534;
-  --color-green-700: #86efac;
-  --color-amber-50: #451a03;
-  --color-amber-700: #fcd34d;
-  --color-amber-800: #fde68a;
-  --color-amber-900: #fef3c7;
-  --color-red-50: #450a0a;
-  --color-red-200: #7f1d1d;
+  /* Borders */
+  --color-slate-200: #2e2e2e;
+  --color-slate-300: #363636;
+
+  /* Muted text and icons */
+  --color-slate-400: #707070;
+  --color-slate-500: #a1a1a1;
+  --color-slate-600: #b4b4b4;
+
+  /* Text */
+  --color-slate-700: #d4d4d4;
+  --color-slate-800: #e5e5e5;
+  --color-slate-900: #ededed;
+  --color-slate-950: #fafafa;
+
+  /* Status badges: success uses the Supabase green */
+  --color-green-50: #0f2e22;
+  --color-green-200: #1b5e43;
+  --color-green-700: #3ecf8e;
+  --color-amber-50: #2b2110;
+  --color-amber-200: #5c4412;
+  --color-amber-700: #fbbf24;
+  --color-amber-800: #fcd34d;
+  --color-amber-900: #fde68a;
+  --color-red-50: #2d1313;
+  --color-red-200: #6b1f1f;
   --color-red-600: #f87171;
   --color-red-700: #fca5a5;
 }
 
 .dark body {
-  background-color: var(--color-slate-50);
-  color: var(--color-slate-900);
+  background-color: #171717;
+  color: #ededed;
+}
+
+/* Primary accent: buttons, selected chips and progress bars become Supabase green. */
+.dark .bg-slate-900 {
+  background-color: #fafbfb; /*#3ecf8e; green*/
+  color: #0b2e1e;
+}
+.dark .hover\:bg-slate-800:hover {
+  background-color: #f9fbfa; /*#34b27b; green*/
+}
+.dark .focus\:border-slate-900:focus,
+.dark .focus-visible\:ring-slate-900:focus-visible {
+  border-color: #f3f5f4; /*#3ecf8e; green*/
+  --tw-ring-color: #f9fafa; /*#3ecf8e; green*/
+}
+
+/* Rows and cards get a lighter hover instead of a darker one. */
+.dark .hover\:bg-slate-50:hover {
+  background-color: #232323;
+}
+
+/* Thin, quiet scrollbars like the Supabase dashboard */
+.dark * {
+  scrollbar-color: #363636 transparent;
 }
 
 /*
