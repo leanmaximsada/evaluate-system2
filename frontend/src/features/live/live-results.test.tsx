@@ -146,4 +146,16 @@ describe("LiveResults", () => {
       await screen.findByText("Results are not published yet"),
     ).toBeInTheDocument();
   });
+
+    it('tells the audience the results are being revealed and shows only the revealed rows', async () => {
+    const visible = base.rows.slice(2)
+    vi.mocked(api.get).mockResolvedValue({
+      data: { data: { ...base, rows: visible, reveal: { enabled: true, total_steps: 2, revealed_steps: 0, complete: false } } },
+    })
+    renderScreen()
+
+    expect(await screen.findByText('The results are being revealed…')).toBeInTheDocument()
+    expect(screen.queryByText('Alice')).not.toBeInTheDocument()
+    expect(screen.getByText('Cara')).toBeInTheDocument()
+  })
 });

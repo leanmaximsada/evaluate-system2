@@ -9,10 +9,11 @@ use App\Services\ResultService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 use App\Services\SponsorService;
+use App\Services\RevealService;
 
 class PublicResultController extends Controller
 {
-        public function __construct(private readonly ResultService $results, private readonly SponsorService $sponsors) {}
+    public function __construct(private readonly ResultService $results, private readonly SponsorService $sponsors, private readonly RevealService $reveal) {}
 
     public function show(string $eventCode): JsonResponse
     {
@@ -35,7 +36,8 @@ class PublicResultController extends Controller
             'revision' => $publication->revision,
             'published_at' => $publication->published_at?->toIso8601String(),
             // The frozen snapshot: number, name, team, rank, tie flag and (if allowed) score. Nothing else.
-            'rows' => $publication->snapshot['rows'] ?? [],
+            'reveal' => $this->reveal->publicState($publication),
+            'rows' => $this->reveal->visibleRows($publication),
             // Name, level and logo only. Nothing else about a sponsor is public.
             'organization' => $event->publicOrganization(),
             'sponsors' => $this->sponsors->publicList($event),

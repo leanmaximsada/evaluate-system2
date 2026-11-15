@@ -61,5 +61,8 @@
         "Results are not published.": "លទ្ធផលមិនទាន់ត្រូវបានផ្សព្វផ្សាយទេ។",
         "This area is for judges only.": "ផ្នែកនេះសម្រាប់តែអ្នកវិនិច្ឆ័យប៉ុណ្ណោះ។",
         "An event can have at most 40 sponsors.": "កម្មវិធីមួយអាចមានអ្នកឧបត្ថម្ភបានយ៉ាងច្រើន 40 ប៉ុណ្ណោះ។",
-    "The order must list every sponsor exactly once.": "លំដាប់ត្រូវមានអ្នកឧបត្ថម្ភទាំងអស់ម្ដងគត់។"
+    "The order must list every sponsor exactly once.": "លំដាប់ត្រូវមានអ្នកឧបត្ថម្ភទាំងអស់ម្ដងគត់។",
+        "Reveal mode is not turned on for these results.": "របៀបបង្ហាញជាជំហានៗមិនត្រូវបានបើកសម្រាប់លទ្ធផលទាំងនេះទេ។",
+    "Everything is already revealed.": "អ្វីៗទាំងអស់ត្រូវបានបង្ហាញរួចហើយ។",
+    "Nothing has been revealed yet.": "មិនទាន់មានអ្វីត្រូវបានបង្ហាញនៅឡើយទេ។"
 }

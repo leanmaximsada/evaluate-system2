@@ -8,9 +8,11 @@ import { useI18n } from '@/i18n/provider'
 import { ordinal } from '@/i18n/ordinal'
 import type { EventStatus, PublicSponsor, PublicVisibility } from '@/types'
 import { LanguageSwitcher } from '@/components/ui/language-switcher'
+import { Confetti } from './confetti'
 import { LiveIndicator } from './live-indicator'
 import { SponsorStrip } from './sponsor-strip'
 import { useRealtimeSignal, type ConnectionState } from './use-realtime'
+import { useRevealedRows } from './use-revealed-rows'
 
 export interface PublicRow {
   number: string
@@ -19,6 +21,13 @@ export interface PublicRow {
   rank: number
   tied: boolean
   score?: string
+}
+
+export interface PublicReveal {
+  enabled: boolean
+  total_steps: number
+  revealed_steps: number
+  complete: boolean
 }
 
 export interface PublicResults {
@@ -30,6 +39,7 @@ export interface PublicResults {
   published_at: string | null
   organization?: { name: string | null; logo_url: string | null } | null
   sponsors?: PublicSponsor[]
+  reveal?: PublicReveal | null
   rows: PublicRow[]
 }
 
@@ -72,8 +82,14 @@ export function LiveResults({ code, preview }: { code: string; preview?: { event
   const subtitleLines = (data?.event.subtitle ?? '').split('\n').map((line) => line.trim()).filter(Boolean)
   const organization = data?.organization
 
+  const revealPending = !!data?.reveal && !data.reveal.complete
+  const { rows, drum, fresh } = useRevealedRows(data?.rows, !!data?.reveal?.enabled && !preview)
+  const celebrate = rows.some((row) => row.rank === 1 && fresh.has(row.number))
+
   return (
     <main className="theme-light min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900 px-6 py-8 text-white sm:px-10 lg:px-16">
+      {celebrate && <Confetti key={rows.map((row) => row.number).join('-')} />}
+
       {preview && (
         <div role="status" className="mb-6 rounded-lg bg-amber-300 px-4 py-2 text-center text-sm font-semibold text-slate-950">
           {t('live.preview_banner')}
@@ -85,7 +101,7 @@ export function LiveResults({ code, preview }: { code: string; preview?: { event
           {organization && (organization.logo_url || organization.name) && (
             <div className="mb-3 flex items-center gap-3">
               {organization.logo_url && (
-                <span className="rounded-lg bg-white p-2 shadow">
+                <span className="rounded-lg bg-[#ffffff] p-2 shadow">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={organization.logo_url}
@@ -98,10 +114,10 @@ export function LiveResults({ code, preview }: { code: string; preview?: { event
               {organization.name && <span className="text-[clamp(1rem,2vw,1.75rem)] font-semibold text-white/90">{organization.name}</span>}
             </div>
           )}
-          {/* <div className="flex items-center gap-2 text-amber-300">
+          <div className="flex items-center gap-2 text-amber-300">
             <Trophy weight="fill" className="h-5 w-5" aria-hidden="true" />
             <span className="text-sm font-semibold uppercase tracking-widest">{t('live.leaderboard')}</span>
-          </div> */}
+          </div>
           {data && !unpublished && (
             <>
               <h1 className="mt-2 text-[clamp(2rem,5vw,4.5rem)] font-semibold leading-tight tracking-tight">{data.event.name}</h1>
@@ -110,20 +126,20 @@ export function LiveResults({ code, preview }: { code: string; preview?: { event
                   {subtitleLines.map((line) => <p key={line}>{line}</p>)}
                 </div>
               )}
-              {/* <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
+              <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
                 <span className="rounded-full bg-amber-300 px-3 py-1 font-semibold text-slate-950">
                   {data.is_final ? t('live.final') : t('live.provisional')}
                 </span>
                 <span className="rounded-full bg-white/15 px-3 py-1 text-white">{t(`event.status_${data.event.status}`)}</span>
                 {data.published_at && <span className="text-white/60">{t('live.updated', { date: formatDateTime(data.published_at) })}</span>}
                 <span className="text-white/40">{t('live.checked', { time: formatDateTime(new Date(query.dataUpdatedAt)) })}</span>
-              </div> */}
+              </div>
             </>
           )}
         </div>
         {!preview && (
           <div className="flex items-center gap-3">
-            {/* <LiveIndicator state={connection} dark /> */}
+            <LiveIndicator state={connection} dark />
             <LanguageSwitcher />
             <button
               type="button"
@@ -153,16 +169,29 @@ export function LiveResults({ code, preview }: { code: string; preview?: { event
 
           {query.isError && <p className="mb-4 rounded-lg bg-amber-300/15 px-4 py-3 text-amber-100" role="status">{t('live.stale')}</p>}
 
-          {data.rows.length === 0 ? (
+          {revealPending && !drum && (
+            <p role="status" className="mb-4 animate-pulse rounded-xl bg-white/10 px-6 py-4 text-center text-[clamp(1.1rem,2.2vw,2rem)] font-semibold text-amber-200">
+              {t('live.reveal_banner')}
+            </p>
+          )}
+
+          {drum && (
+            <div role="status" className="mb-4 flex items-center justify-center gap-4 rounded-2xl bg-white/10 px-6 py-6 text-[clamp(1.25rem,2.6vw,2.5rem)] font-semibold text-amber-200">
+              <span className="drum-dot" /><span className="drum-dot" /><span className="drum-dot" />
+              <span>{t('live.reveal_drum')}</span>
+            </div>
+          )}
+
+          {rows.length === 0 && !revealPending && !drum ? (
             <p className="mt-16 text-center text-xl text-white/80">{t('live.no_rows')}</p>
           ) : (
             <ol className="space-y-3" aria-live="polite">
-              {data.rows.map((row) => {
+              {rows.map((row) => {
                 const podium = PODIUM[row.rank]
                 return (
                   <li
                     key={row.number}
-                    className={`grid grid-cols-[auto_auto_1fr_auto_auto] items-center gap-3 rounded-2xl px-4 py-3 text-slate-900 shadow-lg sm:gap-5 sm:px-8 sm:py-4 ${podium ? podium.row : 'bg-white/95'}`}
+                    className={`grid grid-cols-[auto_auto_1fr_auto_auto] items-center gap-3 rounded-2xl px-4 py-3 text-slate-900 shadow-lg sm:gap-5 sm:px-8 sm:py-4 ${podium ? podium.row : 'bg-white/95'} ${fresh.has(row.number) ? 'reveal-in' : ''}`}
                   >
                     <span className="block h-[clamp(1.75rem,3.2vw,3.25rem)] w-[clamp(1.75rem,3.2vw,3.25rem)]">
                       {podium && <Medal weight="fill" className={`h-full w-full ${podium.medal}`} aria-hidden="true" />}

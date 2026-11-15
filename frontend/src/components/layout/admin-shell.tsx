@@ -103,6 +103,7 @@ const SEGMENTS: Record<string, MessageKey> = {
   participants: "events.tab_participants",
   judges: "events.tab_judges",
   results: "nav.results",
+  reveal: 'reveal.title',
   'display-review': 'nav.display_review',
 };
 

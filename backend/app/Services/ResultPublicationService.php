@@ -76,6 +76,9 @@ class ResultPublicationService
             $publication->published_by = $actor->id;
             $publication->published_at = Carbon::now();
             $publication->correction_reason = $reason !== '' ? $reason : null;
+            $publication->reveal_enabled = ! empty($data['reveal']);
+            $publication->reveal_top = (int) ($data['reveal_top'] ?? 3);
+            $publication->revealed_count = 0;
             $publication->save();
 
             $this->audit->log('results.published', $event, [

@@ -90,7 +90,7 @@ class PublicResultsTest extends TestCase
         $response = $this->getJson($this->url($event))->assertOk();
         $data = $response->json('data');
 
-        $this->assertSame(['event', 'is_final', 'organization', 'published_at', 'revision', 'rows', 'show_tie_indicator', 'sponsors', 'visibility'], $this->sortedKeys($data));
+        $this->assertSame(['event', 'is_final', 'organization', 'published_at', 'reveal', 'revision', 'rows', 'show_tie_indicator', 'sponsors', 'visibility'], $this->sortedKeys($data));
         $this->assertSame(['code', 'name', 'status', 'subtitle'], $this->sortedKeys($data['event']));
         $this->assertSame(['name', 'number', 'rank', 'score', 'team_name', 'tied'], $this->sortedKeys($data['rows'][0]));
 

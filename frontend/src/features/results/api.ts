@@ -2,6 +2,8 @@ import { api } from '@/lib/api'
 import type { ParticipantDetail, Publication, PublicVisibility, ResultsOverview } from '@/types'
 
 export interface PublishPayload {
+  reveal?: boolean
+  reveal_top?: number
   visibility: PublicVisibility
   confirm: true
   accept_incomplete?: boolean

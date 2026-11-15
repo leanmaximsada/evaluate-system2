@@ -337,3 +337,22 @@ export interface DisplayChecks {
   is_published: boolean
   has_previous_publication: boolean
 }
+
+export interface RevealStep {
+  rank: number
+  revealed: boolean
+  rows: { number: string; name: string; team_name?: string; score?: string }[]
+}
+
+export interface RevealState {
+  published: boolean
+  enabled: boolean
+  revision: number | null
+  reveal_top: number
+  total_steps: number
+  revealed_steps: number
+  complete: boolean
+  steps: RevealStep[]
+}
+
+export type RevealAction = 'next' | 'undo' | 'all' | 'reset'

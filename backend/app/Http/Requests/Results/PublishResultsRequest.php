@@ -18,6 +18,8 @@ class PublishResultsRequest extends FormRequest
             'visibility' => ['required', 'in:rank_and_score,rank_only'],
             'accept_incomplete' => ['sometimes', 'boolean'],
             'correction_reason' => ['nullable', 'string', 'max:2000'],
+            'reveal' => ['sometimes', 'boolean'],
+            'reveal_top' => ['sometimes', 'integer', 'min:1', 'max:10'],
         ];
     }
 }

@@ -30,6 +30,8 @@ export function PublishDialog({ open, hasPrevious, incompleteCount, loading = fa
   const [accept, setAccept] = useState(false)
   const [confirm, setConfirm] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [reveal, setReveal] = useState(false)
+  const [revealTop, setRevealTop] = useState('3')
 
   function submit() {
     if (!confirm) return setError('results.err_confirm')
@@ -41,6 +43,7 @@ export function PublishDialog({ open, hasPrevious, incompleteCount, loading = fa
       confirm: true,
       ...(incompleteCount > 0 && accept ? { accept_incomplete: true } : {}),
       ...(reason.trim() ? { correction_reason: reason.trim() } : {}),
+      ...(reveal ? { reveal: true, reveal_top: Number(revealTop) } : {}),
     })
   }
 
@@ -70,6 +73,12 @@ export function PublishDialog({ open, hasPrevious, incompleteCount, loading = fa
 
       {incompleteCount > 0 && (
         <CheckboxField label={t('results.accept_incomplete', { n: incompleteCount })} checked={accept} onChange={(e) => setAccept(e.target.checked)} />
+      )}
+      <CheckboxField label={t('results.reveal_option')} hint={t('results.reveal_hint')} checked={reveal} onChange={(e) => setReveal(e.target.checked)} />
+      {reveal && (
+        <SelectField label={t('results.reveal_top')} value={revealTop} onChange={(e) => setRevealTop(e.target.value)}>
+          {[1, 3, 5, 10].map((n) => <option key={n} value={n}>{t('results.reveal_top_n', { n })}</option>)}
+        </SelectField>
       )}
       <CheckboxField label={t('results.confirm_check')} checked={confirm} onChange={(e) => setConfirm(e.target.checked)} />
 

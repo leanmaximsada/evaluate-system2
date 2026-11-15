@@ -126,6 +126,11 @@ export default function DisplayReviewPage() {
               <ArrowSquareOut className="h-4 w-4" aria-hidden="true" />{t('display.open')}
             </Link>
           )}
+                    {checks?.is_published && can('results.publish') && (
+            <Link href={`/reveal/${event.id}`} className="inline-flex items-center gap-2 text-sm font-medium text-slate-900 underline">
+              {t('reveal.open_remote')}
+            </Link>
+          )}
           {!canPublishNow && !checks?.is_published && <p className="text-sm text-slate-500">{t('results.publish_after_complete')}</p>}
         </div>
         <p className="mt-3 text-xs text-slate-500">{t('display.live_note')}</p>

@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\PublicResultController;
 use App\Http\Controllers\Api\V1\JudgeController;
 use App\Http\Controllers\Api\V1\SponsorController;
 use App\Http\Controllers\Api\V1\EventDisplayController;
+use App\Http\Controllers\Api\V1\RevealController;
 
 Route::prefix('v1')->group(function () {
     Route::get('health', function () {
@@ -59,6 +60,8 @@ Route::prefix('v1')->group(function () {
         });
         Route::get('events/{event}/results/export', [ResultController::class, 'export'])->middleware('can:results.export');
         Route::middleware('can:results.publish')->group(function () {
+            Route::get('events/{event}/reveal', [RevealController::class, 'show']);
+            Route::post('events/{event}/reveal', [RevealController::class, 'update']);
             Route::post('events/{event}/results/recalculate', [ResultController::class, 'recalculate']);
             Route::post('events/{event}/results/publish', [ResultController::class, 'publish']);
         });
