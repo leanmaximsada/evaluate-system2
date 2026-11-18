@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
-import { Inter, Noto_Sans_Khmer } from 'next/font/google'
+import { Inter, Kantumruy_Pro } from 'next/font/google'
 import { Providers } from '@/components/providers'
 import { LOCALE_COOKIE, isLocale } from '@/i18n/core'
 import './globals.css'
@@ -9,7 +9,12 @@ import { themeInitScript } from '@/theme/theme-provider'
 import { ThemeProvider } from '@/theme/theme-provider'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' })
-const khmer = Noto_Sans_Khmer({ subsets: ['khmer'], variable: '--font-khmer', display: 'swap' })
+
+const khmer = Kantumruy_Pro({
+  subsets: ['khmer', 'latin'],
+  variable: '--font-khmer',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'Evaluation System',
@@ -21,7 +26,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   return (
     <ThemeProvider>
-    <html lang="en" suppressHydrationWarning>
+   <html lang="en" suppressHydrationWarning className={`${inter.variable} ${khmer.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
