@@ -11,6 +11,7 @@ import { StatCard } from '@/components/ui/stat-card'
 import { ErrorState } from '@/components/ui/error-state'
 import { InlineSpinner } from '@/components/ui/spinner'
 import { ChartBar, Hash, UsersThree } from '@phosphor-icons/react'
+import { LevelBadge } from '@/features/forms/level-badge'
 
 const statusTone = {
   submitted: 'bg-green-50 text-green-700 ring-green-200',
@@ -82,7 +83,10 @@ export default function ParticipantResultPage() {
                     {j.scores.map((s) => (
                       <tr key={s.criterion_id}>
                         <td className="px-3 py-2">{s.name}</td>
-                        <td className="px-3 py-2 text-slate-600">{s.min_score} – {s.max_score}</td>
+                        <td className="px-3 py-2 font-medium text-slate-900">
+                          {s.score ?? '—'}
+                          {s.level && <span className="ml-2"><LevelBadge level={s.level} /></span>}
+                        </td>
                         <td className="px-3 py-2 text-slate-600">{s.weight > 0 ? `${s.weight}%` : '—'}</td>
                         <td className="px-3 py-2 font-medium text-slate-900">{s.score ?? '—'}</td>
                       </tr>

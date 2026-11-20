@@ -17,7 +17,7 @@ const khmer = Kantumruy_Pro({
 })
 
 export const metadata: Metadata = {
-  title: 'Evaluation System',
+  title: 'Pihn Tuh - Evaluation System',
   description: 'Manage events, judges, scoring and live results.',
 }
 

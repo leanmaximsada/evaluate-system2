@@ -65,6 +65,7 @@ class DemoDataService
         private readonly SponsorService $sponsors,
         private readonly EventDisplayService $display,
         private readonly AuditLogger $audit,
+        private readonly RubricService $rubric,
     ) {}
 
     public function exists(): bool
@@ -169,7 +170,7 @@ class DemoDataService
             ['Presentation skills', 'Structure, pace and delivery.', 0, 100, 25],
             ['Creativity and innovation', 'Originality of the idea and its approach.', 0, 100, 25],
             ['Communication', 'Clarity when answering questions.', 0, 100, 20],
-        ]);
+        ], withRubric: true);
         $quick = $this->makeForm($admin, 'Poster Quick Score', 'Demo data: an unweighted form, every criterion counts equally.', false, [
             ['Clarity', 'Is the poster easy to understand?', 1, 10, 0],
             ['Originality', 'Is the idea new?', 1, 10, 0],
@@ -333,7 +334,7 @@ class DemoDataService
     }
 
     /** @param list<array{0: string, 1: string, 2: int, 3: int, 4: int}> $criteria */
-    private function makeForm(User $admin, string $name, string $description, bool $weighted, array $criteria): EvaluationForm
+    private function makeForm(User $admin, string $name, string $description, bool $weighted, array $criteria, bool $withRubric = false): EvaluationForm
     {
         $form = $this->forms->create([
             'name' => self::FORM_PREFIX.$name,
@@ -346,6 +347,11 @@ class DemoDataService
             $this->forms->addCriterion($version, [
                 'name' => $title, 'description' => $guidance, 'min_score' => $min, 'max_score' => $max, 'weight' => $weight,
             ], $admin);
+        }
+
+        if ($withRubric) {
+            $ids = $version->criteria()->orderBy('display_order')->pluck('id')->all();
+            $this->rubric->save($version, $this->demoRubric($ids), $admin);
         }
 
         $this->forms->publish($version, $admin);
@@ -420,5 +426,21 @@ class DemoDataService
         if (app()->isProduction()) {
             throw new RuntimeException('Demo data is disabled in production.');
         }
+    }
+
+        /** @param list<int> $criterionIds @return list<array<string, mixed>> */
+    private function demoRubric(array $criterionIds): array
+    {
+        $levels = [
+            ['Superior', 'ឆ្នើមបំផុត', '90.00', 'green', 'Outstanding. Goes well beyond what was expected.'],
+            ['Excellent', 'ល្អប្រសើរ', '75.00', 'blue', 'Strong work with only minor gaps.'],
+            ['Good', 'ល្អ', '50.00', 'amber', 'Meets the basics but lacks depth.'],
+            ['Needs Improvement', 'ត្រូវកែលម្អ', '0.00', 'red', 'Major gaps. Needs significant work.'],
+        ];
+
+        return array_map(fn (array $l) => [
+            'name' => $l[0], 'name_km' => $l[1], 'min_percent' => $l[2], 'color' => $l[3],
+            'descriptions' => array_fill_keys($criterionIds, $l[4]),
+        ], $levels);
     }
 }

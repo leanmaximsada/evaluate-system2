@@ -13,6 +13,7 @@ class EvaluationFormVersion extends Model
         return [
             'is_weighted' => 'boolean',
             'published_at' => 'datetime',
+            'rubric' => 'array',
         ];
     }
 

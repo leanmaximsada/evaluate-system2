@@ -85,5 +85,9 @@ return [
         'public_subtitle' => 'អត្ថបទបន្ថែម',
                 'organization_name' => 'ឈ្មោះអង្គការ',
         'display_visibility' => 'ការបង្ហាញសាធារណៈ',
+        'levels' => 'កម្រិតនៃរូប៊្រីក',
+        'levels.*.name' => 'ឈ្មោះកម្រិត',
+        'levels.*.min_percent' => 'ភាគរយចាប់ផ្តើម',
+        'levels.*.color' => 'ពណ៌',
     ],
 ];

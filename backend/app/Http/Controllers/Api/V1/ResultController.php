@@ -19,6 +19,7 @@ use App\Services\ResultService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Services\RubricService;
 
 class ResultController extends Controller
 {
@@ -27,6 +28,7 @@ class ResultController extends Controller
         private readonly ResultPublicationService $publications,
         private readonly ResultExporter $exporter,
         private readonly AuditLogger $audit,
+        private readonly RubricService $rubric,
     ) {}
 
     public function index(Event $event): JsonResponse
@@ -83,6 +85,7 @@ class ResultController extends Controller
                         ->filter(fn ($c) => $c->is_active || $scoreMap->has($c->id))
                         ->map(fn ($c) => [
                             'criterion_id' => $c->id,
+                            'level' => $this->rubric->levelFor($evaluation->formVersion, $c, $scoreMap->get($c->id)?->score),
                             'name' => $c->name,
                             'min_score' => (float) $c->min_score,
                             'max_score' => (float) $c->max_score,

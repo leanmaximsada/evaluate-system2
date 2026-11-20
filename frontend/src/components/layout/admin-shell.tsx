@@ -26,6 +26,7 @@ import { RoleBadge } from "@/components/ui/role-badge";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import {ThemeToggle} from '@/theme/theme-toggle'
+import { Logo } from "../ui/logo";
 
 interface NavItem {
   href: string;
@@ -111,12 +112,7 @@ function Brand() {
   const { t } = useI18n();
   return (
     <div className="flex items-center gap-2.5">
-      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white">
-        <Trophy weight="fill" className="h-4 w-4" aria-hidden="true" />
-      </span>
-      <span className="text-base font-semibold tracking-tight text-slate-900">
-        {t("app.name")}
-      </span>
+      <Logo showName />
     </div>
   );
 }

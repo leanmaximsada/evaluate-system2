@@ -4,10 +4,11 @@ import { useState } from 'react'
 import type { AxiosError } from 'axios'
 import { useI18n } from '@/i18n/provider'
 import { getErrorMessage } from '@/lib/api'
-import type { Criterion } from '@/types'
+import type { Criterion, RubricLevel } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Alert } from '@/components/ui/alert'
 import { Modal } from '@/components/ui/modal'
+import { RubricHelper } from '@/features/forms/rubric-helper'
 
 const NUMBER = /^\d+(\.\d{1,2})?$/
 
@@ -18,6 +19,7 @@ interface Props {
   initial: Scores
   weighted: boolean
   readOnly: boolean
+  rubric?: RubricLevel[] | null
   onSaveDraft: (scores: Scores) => Promise<unknown>
   onSubmit: (scores: Scores) => Promise<unknown>
 }
@@ -38,7 +40,7 @@ function splitErrors(error: unknown): { fields: Record<string, string>; general:
   return { fields, general }
 }
 
-export function ScoreForm({ criteria, initial, weighted, readOnly, onSaveDraft, onSubmit }: Props) {
+export function ScoreForm({ criteria, initial, weighted, readOnly, rubric, onSaveDraft, onSubmit }: Props) {
   const { t } = useI18n()
   const [values, setValues] = useState<Scores>(initial)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -141,6 +143,13 @@ export function ScoreForm({ criteria, initial, weighted, readOnly, onSaveDraft, 
               className={`mt-3 h-12 w-full max-w-xs rounded-lg border px-3 text-lg shadow-sm focus:outline-none focus:ring-2 disabled:bg-slate-50 ${
                 errors[c.id] ? 'border-red-500 focus:ring-red-500/15' : 'border-slate-300 focus:border-slate-900 focus:ring-slate-900/10'
               }`}
+            />
+            <RubricHelper
+              rubric={rubric}
+              criterion={c}
+              value={values[c.id] ?? ''}
+              disabled={readOnly}
+              onPick={(next) => setValues((v) => ({ ...v, [c.id]: next }))}
             />
             {errors[c.id] && <p id={`score-${c.id}-error`} role="alert" className="mt-2 text-sm text-red-600">{errors[c.id]}</p>}
           </li>

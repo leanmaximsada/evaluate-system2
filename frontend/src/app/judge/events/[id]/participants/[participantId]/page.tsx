@@ -43,7 +43,7 @@ export default function JudgeScorePage() {
       : <ErrorState message={getErrorMessage(detail.error)} onRetry={() => detail.refetch()} />
   }
 
-  const { participant, criteria, evaluation, is_weighted } = detail.data
+ const { participant, criteria, evaluation, is_weighted, rubric } = detail.data
   const submitted = evaluation.status === 'submitted'
   const next = event.data ? nextPending(event.data.participants, participantId) : null
 
@@ -68,6 +68,7 @@ export default function JudgeScorePage() {
         initial={evaluation.scores}
         weighted={is_weighted}
         readOnly={submitted}
+        rubric={rubric}
         onSaveDraft={(scores) => draft.mutateAsync(scores)}
         onSubmit={async (scores) => {
           await submit.mutateAsync(scores)

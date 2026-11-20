@@ -104,6 +104,10 @@ class EvaluationFormService
                 $copy->save();
             }
 
+            // Copy the category rubric too. This must come after the criteria are copied,
+            // because the rubric descriptions are linked to the new criteria.
+            app(RubricService::class)->copyToNewVersion($source, $new);
+
             $this->audit->log('form.version_created', $form, ['version' => $new->version_number, 'from' => $source->version_number], $actor);
 
             return $new;

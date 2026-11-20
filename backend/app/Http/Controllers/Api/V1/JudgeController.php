@@ -14,6 +14,7 @@ use App\Services\EvaluationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\RubricService;
 
 /**
  * The judge portal API. A judge only ever sees their own evaluations: never other judges' scores,
@@ -21,7 +22,7 @@ use Illuminate\Support\Facades\DB;
  */
 class JudgeController extends Controller
 {
-    public function __construct(private readonly EvaluationService $evaluations) {}
+    public function __construct(private readonly EvaluationService $evaluations, private readonly RubricService $rubric) {}
 
     public function events(Request $request): JsonResponse
     {
@@ -90,6 +91,7 @@ class JudgeController extends Controller
             'event' => ['id' => $event->id, 'name' => $event->name, 'code' => $event->code, 'description' => $event->description, 'venue' => $event->venue],
             'is_weighted' => $version->is_weighted,
             'criteria' => $this->criteria($version),
+                        'rubric' => $this->rubric->forJudge($version),
             'participants' => $participants,
         ]]);
     }
@@ -110,6 +112,7 @@ class JudgeController extends Controller
             ],
             'is_weighted' => $version->is_weighted,
             'criteria' => $this->criteria($version),
+                        'rubric' => $this->rubric->forJudge($version),
             'evaluation' => $this->evaluationData($evaluation),
         ]]);
     }

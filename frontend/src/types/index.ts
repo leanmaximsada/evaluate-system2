@@ -230,6 +230,7 @@ export interface JudgeScore {
   max_score: number
   weight: number
   score: string | null
+  level?: LevelRef | null
 }
 
 export interface JudgeRevision {
@@ -308,6 +309,7 @@ export interface JudgeParticipantDetail {
   is_weighted: boolean
   criteria: Criterion[]
   evaluation: JudgeEvaluation
+  rubric?: RubricLevel[] | null
 }
 
 export type SponsorTier = 'diamond' | 'gold' | 'silver' | 'supporter'
@@ -356,3 +358,21 @@ export interface RevealState {
 }
 
 export type RevealAction = 'next' | 'undo' | 'all' | 'reset'
+
+export type RubricColor = 'green' | 'blue' | 'amber' | 'orange' | 'red' | 'slate' | 'purple'
+
+export interface RubricLevel {
+  name: string
+  name_km: string | null
+  /** Where the level starts, as a percentage of the criterion's score range, e.g. "90.00". */
+  min_percent: string
+  color: RubricColor
+  /** Criterion id → description. */
+  descriptions: Record<string, string>
+}
+
+export interface LevelRef {
+  name: string
+  name_km: string | null
+  color: RubricColor
+}

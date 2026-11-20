@@ -24,6 +24,7 @@ import { FormStatusBadge } from '@/components/ui/form-status-badge'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { ErrorState } from '@/components/ui/error-state'
 import { InlineSpinner } from '@/components/ui/spinner'
+import { RubricEditor } from '@/features/forms/rubric-editor'
 
 const iconBtn = 'rounded-md p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900 disabled:pointer-events-none disabled:opacity-40'
 
@@ -278,7 +279,14 @@ export default function FormBuilderPage() {
             </Card>
           )}
 
+          <RubricEditor
+            formId={id}
+            versionId={version.id}
+            criteria={version.criteria.filter((c) => c.is_active)}
+            editable={isDraft}
+          />
           {isDraft && (
+            
             <Card title={t('forms.publish')}>
               {issues.length > 0 && (
                 <div className="mb-4 space-y-1 text-sm text-amber-800">

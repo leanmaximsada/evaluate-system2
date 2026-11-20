@@ -11,6 +11,7 @@ import { LanguageSwitcher } from '@/components/ui/language-switcher'
 import { LinkButton } from '@/components/ui/link-button'
 import { ThemeToggle } from '@/theme/theme-toggle'
 import { Screenshot } from './screenshot'
+import { Logo } from '@/components/ui/logo'
 
 const FEATURES: { id: 'forms' | 'judge' | 'results' | 'display' | 'reveal' | 'bilingual'; icon: Icon }[] = [
   { id: 'forms', icon: ClipboardText },
@@ -50,10 +51,8 @@ export function LandingPage() {
       <header className="sticky top-0 z-30 border-b border-slate-200 bg-slate-50/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-white">
-              <Trophy weight="fill" className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <span className="font-semibold tracking-tight">{t('app.name')}</span>
+          <Logo />
+            <span className="font-semibold tracking-tight">{t('app.name2')}</span>
           </Link>
 
           <nav aria-label={t('landing.nav_label')} className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">

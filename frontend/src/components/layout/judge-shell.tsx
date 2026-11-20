@@ -10,6 +10,7 @@ import { FullPageSpinner } from '@/components/ui/spinner'
 import { Button } from '@/components/ui/button'
 import { LanguageSwitcher } from '@/components/ui/language-switcher'
 import { ThemeToggle } from '@/theme/theme-toggle'
+import { Logo } from '@/components/ui/logo'
 
 export function JudgeShell({ children }: { children: ReactNode }) {
   const { user, isLoading, logout } = useAuth()
@@ -34,9 +35,8 @@ export function JudgeShell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-4 py-3">
           <Link href="/judge" className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white">
-              <Trophy weight="fill" className="h-4 w-4" aria-hidden="true" />
-            </span>
+            <Logo />
+
             <span className="font-semibold tracking-tight text-slate-900">{t('judge.portal')}</span>
           </Link>
           <div className="flex items-center gap-2">

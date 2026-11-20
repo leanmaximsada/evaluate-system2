@@ -64,5 +64,9 @@
     "The order must list every sponsor exactly once.": "លំដាប់ត្រូវមានអ្នកឧបត្ថម្ភទាំងអស់ម្ដងគត់។",
         "Reveal mode is not turned on for these results.": "របៀបបង្ហាញជាជំហានៗមិនត្រូវបានបើកសម្រាប់លទ្ធផលទាំងនេះទេ។",
     "Everything is already revealed.": "អ្វីៗទាំងអស់ត្រូវបានបង្ហាញរួចហើយ។",
-    "Nothing has been revealed yet.": "មិនទាន់មានអ្វីត្រូវបានបង្ហាញនៅឡើយទេ។"
+    "Nothing has been revealed yet.": "មិនទាន់មានអ្វីត្រូវបានបង្ហាញនៅឡើយទេ។",
+        "This version is published and cannot be changed.": "កំណែនេះត្រូវបានផ្សព្វផ្សាយហើយ មិនអាចផ្លាស់ប្ដូរបានទេ។",
+    "A rubric needs between 2 and 8 levels.": "រូប៊្រីកត្រូវមានកម្រិតពី 2 ដល់ 8។",
+    "Each level needs a different starting percentage.": "កម្រិតនីមួយៗត្រូវមានភាគរយចាប់ផ្តើមខុសគ្នា។",
+    "One level must start at 0%.": "ត្រូវមានកម្រិតមួយចាប់ផ្តើមពី 0%។"
 }
