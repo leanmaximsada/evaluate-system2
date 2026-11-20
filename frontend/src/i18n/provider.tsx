@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { MessageKey } from './messages/en'
 import { LOCALE_COOKIE, isMessageKey, translate, type Locale } from './core'
 
@@ -33,6 +33,11 @@ const I18nContext = createContext<I18nValue>(build('en', () => {}))
 
 export function I18nProvider({ initialLocale, children }: { initialLocale: Locale; children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(initialLocale)
+
+    // Keep <html lang> in step with the language, including on the first load after a refresh.
+  useEffect(() => {
+    document.documentElement.lang = locale
+  }, [locale])
 
   const setLocale = useCallback((next: Locale) => {
     document.cookie = `${LOCALE_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`
